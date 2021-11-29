@@ -1,5 +1,5 @@
 import numpy as np
-
+import time
 import Functions
 
 
@@ -25,7 +25,7 @@ class Specimen:
         return np.count_nonzero(self.matrix == 0)
 
     def display(self):
-        print(self.matrix)
+        print(self.matrix, "\n")
 
 
 class Population(Specimen):
@@ -82,10 +82,14 @@ class Population(Specimen):
 
         return self.specimens[max_index]
 
+    def display_population(self):
+        for specimen in self.specimens:
+            specimen.display()
+
 
 def ea(iterations, time, columns, rows):
     time_ea = 0
-    population = Population(columns, rows)
+    population = Population(columns=columns, rows=rows, size=20)
     population.make_population()
     best_specimen = population.specimens[0]
 
@@ -100,4 +104,4 @@ def ea(iterations, time, columns, rows):
         if time_ea >= time:
             break
 
-    return best_specimen.print()
+    return best_specimen.display()
