@@ -1,5 +1,6 @@
 import numpy as np
-import time
+from numpy import random
+
 import Functions
 
 
@@ -43,10 +44,52 @@ class Population(Specimen):
             self.specimens.append(S)
 
     def mutation(self):
-        pass
+        random_specimen = random.choice(self.specimens)
+        self.specimens.remove(random_specimen)
+        a = 0
+        b = len(random_specimen.matrix)
+        c = len(random_specimen.matrix[0])
+        row_1, row_2 = random.sample([i for i in range(a, b)], k=2)
+        col_1, col_2 = random.choices([i for i in range(0, c) if i not in [row_1, row_2]], k=2)
+
+        temp_matrix = [random_specimen[row_1][col_1], random_specimen[row_1][col_2], random_specimen[row_2][col_1],
+                       random_specimen[row_2][col_2]]
+        sum_row1 = random_specimen[row_1][col_1] + random_specimen[row_1][col_2]
+        sum_row2 = random_specimen[row_2][col_1] + random_specimen[row_2][col_2]
+        sum_col1 = random_specimen[row_1][col_1] + random_specimen[row_2][col_1]
+        sum_col2 = random_specimen[row_1][col_2] + random_specimen[row_2][col_2]
+        temp_matrix = Functions.change_matrix(temp_matrix, [sum_col1, sum_col2], [sum_row1, sum_row2])
+        random_specimen[row_1][col_1] = temp_matrix[0][0]
+        random_specimen[row_1][col_2] = temp_matrix[0][1]
+        random_specimen[row_2][col_1] = temp_matrix[1][0]
+        random_specimen[row_2][col_2] = temp_matrix[1][1]
+        new_specimen = random_specimen
+        self.specimens.append(new_specimen)
 
     def crossover(self):
-        pass
+        parent1, parent2 = random.choices(self.specimens, k=2)
+        DIV = (parent1 + parent2) // 2
+        REM = (parent1 + parent2) % 2
+        sum_row = []
+        sum = 0
+        for i in range(len(REM)):
+            for j in range(len(REM[0])):
+                sum += REM[i][j]
+            sum_row.append(sum / 2)
+            sum = 0
+
+        sum_col = []
+        sum = 0
+        for i in range(len(REM)):
+            for j in range(len(REM[0])):
+                sum += REM[j][i]
+            sum_col.append(sum / 2)
+            sum = 0
+        REM1 = Functions.separate(REM)
+        REM2 = REM - REM1
+        child1 = DIV + REM1
+        child2 = DIV + REM2
+        return child1, child2
 
     def selection(self):
         qualities = []
