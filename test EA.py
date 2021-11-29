@@ -17,7 +17,8 @@ def test1():
     start = time.time()
     S.initialize_matrix(columns_, rows_)
     S.display()
-    print("Time: ", time.time() - start)
+    print("Time:    ", time.time() - start)
+    print("quality: ", S.quality())
 
 
 # TEST 2
@@ -28,7 +29,8 @@ def test2():
     start = time.time()
     S.initialize_matrix(columns_, rows_)
     S.display()
-    print("Time: ", time.time() - start)
+    print("Time:    ", time.time() - start)
+    print("quality: ", S.quality())
 
 
 def random_test(size, max):
@@ -41,10 +43,24 @@ def random_test(size, max):
     start = time.time()
     S.initialize_matrix(columns_, rows_)
     S.display()
-    print("Time: ", time.time() - start)
+    print("Time:    ", time.time() - start)
+    print("quality: ", S.quality())
 
 
 # test1()
-# test2()
+test2()
+
+
 # random_test(size=6, max=20)
 
+# TEST make_population method
+def test_population_make():
+    columns_ = [6, 8, 9, 6, 3, 7]
+    rows_ = [8, 3, 7, 9, 8, 4]
+    start = time.time()
+    P = EvolutionaryAlgorithm.Population(columns_, rows_, 20)
+    P.make_population()
+    P.display_population()
+    print("Time: ", time.time() - start)
+
+# test_population_make()
