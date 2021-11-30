@@ -54,23 +54,28 @@ class Population(Specimen):
         random_specimen = random.choice(self.specimens)
         self.specimens.remove(random_specimen)
         random_specimen = random_specimen.matrix
+
         a = 0
         b = len(random_specimen)
         c = len(random_specimen[0])
+
         row_1, row_2 = random.sample([i for i in range(a, b)], k=2)
         col_1, col_2 = random.choices([i for i in range(0, c) if i not in [row_1, row_2]], k=2)
 
-        temp_matrix = [[random_specimen[row_1][col_1], random_specimen[row_1][col_2]], [random_specimen[row_2][col_1],
-                                                                                        random_specimen[row_2][col_2]]]
+        temp_matrix = [[random_specimen[row_1][col_1], random_specimen[row_1][col_2]], [random_specimen[row_2][col_1], random_specimen[row_2][col_2]]]
+
         sum_row1 = random_specimen[row_1][col_1] + random_specimen[row_1][col_2]
         sum_row2 = random_specimen[row_2][col_1] + random_specimen[row_2][col_2]
         sum_col1 = random_specimen[row_1][col_1] + random_specimen[row_2][col_1]
         sum_col2 = random_specimen[row_1][col_2] + random_specimen[row_2][col_2]
+
         temp_matrix = Functions.change_matrix(temp_matrix, [sum_col1, sum_col2], [sum_row1, sum_row2])
+
         random_specimen[row_1][col_1] = temp_matrix[0][0]
         random_specimen[row_1][col_2] = temp_matrix[0][1]
         random_specimen[row_2][col_1] = temp_matrix[1][0]
         random_specimen[row_2][col_2] = temp_matrix[1][1]
+
         new_specimen = Specimen(b)
         new_specimen.specimen_from_matrix(random_specimen)
         self.specimens.append(new_specimen)
@@ -80,6 +85,7 @@ class Population(Specimen):
         self.specimens.remove(parent1)
         parent2 = random.choice(self.specimens)
         self.specimens.remove(parent2)
+
         parent1 = parent1.matrix
         parent2 = parent2.matrix
         DIV = (parent1 + parent2) // 2
@@ -153,17 +159,22 @@ def ea(iterations, size_of_population, time, columns, rows):
     time_ea = 0
     population = Population(columns=columns, rows=rows, size=size_of_population)
     population.make_population()
-    best_specimen = population.specimens[0]
+    best_specimen_ = population.specimens[0]
+    quality = best_specimen_.quality()
     i = 1
     while i <= iterations:
-        print("quality iteration {0}:\t".format(i), best_specimen.quality())
-        population.mutation()
+        if quality < best_specimen_.quality() or i == 1:
+            print("quality iteration {0}:\t".format(i), best_specimen_.quality())
+        quality = best_specimen_.quality()
+        for x in range(5):
+            population.mutation()
         population.crossover()
         population.selection()
-        if population.best_specimen().quality() > best_specimen.quality():
-            best_specimen = population.best_specimen()
+        if population.best_specimen().quality() > best_specimen_.quality():
+            best_specimen_ = population.best_specimen()
         time_ea += timeit.timeit()
         if time_ea >= time:
             break
         i += 1
-    return best_specimen
+
+    return best_specimen_

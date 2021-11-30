@@ -88,7 +88,11 @@ def test_EA(size_of_specimen, max_generated_value, size_of_population, max_itera
 
 
 test_EA(size_of_specimen=5,
-        max_generated_value=5,
+        max_generated_value=7,
         size_of_population=10,
-        max_iteration=5,
+        max_iteration=100,
         time_=100)
+# prawdopodobieństwo mutacji/krzyżowania
+# liczba chronionych elementów
+# różne metody selekcji
+# krzyżowanie różnego typu osobników (elita -> plebs
