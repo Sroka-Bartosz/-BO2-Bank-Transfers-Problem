@@ -60,21 +60,22 @@ class Population(Specimen):
         c = len(random_specimen[0])
 
         row_1, row_2 = random.sample([i for i in range(a, b)], k=2)
-        col_1, col_2 = random.choices([i for i in range(0, c) if i not in [row_1, row_2]], k=2)
+        col_1, col_2 = random.sample([i for i in range(a, c) if i not in [row_1, row_2]], k=2)
 
-        temp_matrix = [[random_specimen[row_1][col_1], random_specimen[row_1][col_2]], [random_specimen[row_2][col_1], random_specimen[row_2][col_2]]]
+        temp_matrix = [[random_specimen[col_1][row_1], random_specimen[col_2][row_1]],
+                       [random_specimen[col_1][row_2], random_specimen[col_2][row_2]]]
 
-        sum_row1 = random_specimen[row_1][col_1] + random_specimen[row_1][col_2]
-        sum_row2 = random_specimen[row_2][col_1] + random_specimen[row_2][col_2]
-        sum_col1 = random_specimen[row_1][col_1] + random_specimen[row_2][col_1]
-        sum_col2 = random_specimen[row_1][col_2] + random_specimen[row_2][col_2]
+        sum_row1 = random_specimen[col_1][row_1] + random_specimen[col_2][row_1]
+        sum_row2 = random_specimen[col_1][row_2] + random_specimen[col_2][row_2]
+        sum_col1 = random_specimen[col_1][row_1] + random_specimen[col_1][row_2]
+        sum_col2 = random_specimen[col_2][row_1] + random_specimen[col_2][row_2]
 
         temp_matrix = Functions.change_matrix(temp_matrix, [sum_col1, sum_col2], [sum_row1, sum_row2])
 
-        random_specimen[row_1][col_1] = temp_matrix[0][0]
-        random_specimen[row_1][col_2] = temp_matrix[0][1]
-        random_specimen[row_2][col_1] = temp_matrix[1][0]
-        random_specimen[row_2][col_2] = temp_matrix[1][1]
+        random_specimen[col_1][row_1] = temp_matrix[0][0]
+        random_specimen[col_2][row_1] = temp_matrix[0][1]
+        random_specimen[col_1][row_2] = temp_matrix[1][0]
+        random_specimen[col_2][row_2] = temp_matrix[1][1]
 
         new_specimen = Specimen(b)
         new_specimen.specimen_from_matrix(random_specimen)
@@ -105,8 +106,7 @@ class Population(Specimen):
                 sum += REM[j][i]
             sum_col.append(sum / 2)
             sum = 0
-        REM1 = Functions.separate(REM)
-        REM2 = REM - REM1
+        REM1, REM2 = Functions.ones(REM)
 
         child1 = Specimen(len(REM))
         child2 = Specimen(len(REM))
