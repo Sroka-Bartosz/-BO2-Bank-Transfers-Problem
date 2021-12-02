@@ -117,7 +117,7 @@ class Population(Specimen):
         self.specimens.append(child1)
         self.specimens.append(child2)
 
-    def selection(self):
+    def roulette_selection(self):
         qualities = []
         probabilities = {}
         qualtities_sum = 0
@@ -131,13 +131,67 @@ class Population(Specimen):
         for i in range(1, self.size):
             probabilities[i] = [probabilities[i - 1][1],
                                 probabilities[i - 1][1] + np.ceil(qualities[i] / qualtities_sum * 100)]
-
         for j in range(self.size):
-            rand = np.random.randint(0, 100)
+            rand = np.random.randint(0, probabilities[self.size - 1][1])
             for i in range(self.size):
                 if (probabilities[i][0] <= rand) and (probabilities[i][1] >= rand):
                     population.append(self.specimens[i])
                     break
+        self.specimens = population
+
+    def ranking_selection(self):
+        qualities = []
+        qualtities_sum = 0
+        population = []
+        for i in range(self.size):
+            qualities.append(self.specimens[i].quality())
+            qualtities_sum += (self.specimens[i].quality())
+        q2 = qualities[:]
+        q2.sort()
+        r = int(0.75 * len(qualities))
+        q = q2[-r:][::-1]
+        i = 0
+        while len(population) < self.size:
+            for j in range(self.size - 1):
+                if qualities[j] == q[i]:
+                    population.append(self.specimens[j])
+                    break
+            i += 1
+            if i == len(q) - 1:
+                i = 0
+        self.specimens = population
+
+    def tournament_selection(self):
+        count_groups = self.size // 3
+        if count_groups - self.size / 3 != 0:
+            count_groups += 1
+        groups = [[] for i in range(count_groups)]
+
+        g = 0
+        i = 0
+        while True:
+            if i + 2 < self.size:
+                groups[g].append(self.specimens[i])
+                groups[g].append(self.specimens[i + 1])
+                groups[g].append(self.specimens[i + 2])
+                groups[g].sort(reverse=True, key=lambda s: s.quality())
+            elif i + 1 < self.size:
+                groups[g].append(self.specimens[i])
+                groups[g].append(self.specimens[i + 1])
+            elif i < self.size:
+                groups[g].append(self.specimens[i])
+            else:
+                break
+            i += 3
+            g += 1
+
+        population = []
+        g = 0
+        while len(population) < self.size:
+            population.append(groups[g][0])
+            g += 1
+            if g == count_groups:
+                g = 0
         self.specimens = population
 
     def best_specimen(self):
