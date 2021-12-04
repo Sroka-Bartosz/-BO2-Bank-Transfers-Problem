@@ -1,5 +1,6 @@
-import numpy as np
 import random
+
+import numpy as np
 
 
 # Obliczenie wszystkich możliwych permutacji sumujących do granicy
@@ -29,12 +30,12 @@ def change_matrix(matrix, columns_, rows_):
     columns = np.copy(columns_)
     m = len(matrix)
     n = len(matrix[0])
-    visit = [0 for j in range(m*n)]
-    for i in range(0, m*n):
+    visit = [0 for j in range(m * n)]
+    for i in range(0, m * n):
         visit[i] = i
     while visit:
         q = random.choice(visit)
-        row = (q//n)
+        row = (q // n)
         col = (q % n)
         # row = visit[q]//m
         # col = visit[q] % m
@@ -84,71 +85,71 @@ def separate(matrix):
 
 
 def find_min(Z):
-  x = 'r'
-  y = Z.shape[0]
-  idx = 0
-  for i in range(Z.shape[0]):
-    if np.count_nonzero(Z[i] != 0) < y and np.count_nonzero(Z[i] != 0) != 0:
-      y = np.count_nonzero(Z[i] != 0)
-      idx = i
-  for i in range(Z.shape[0]):
-    if np.count_nonzero(Z.T[i] != 0) < y and np.count_nonzero(Z.T[i] != 0) != 0:
-      y = np.count_nonzero(Z.T[i] != 0)
-      idx = i
-      x = 'c'
-  return x, idx
+    x = 'r'
+    y = Z.shape[0]
+    idx = 0
+    for i in range(Z.shape[0]):
+        if np.count_nonzero(Z[i] != 0) < y and np.count_nonzero(Z[i] != 0) != 0:
+            y = np.count_nonzero(Z[i] != 0)
+            idx = i
+    for i in range(Z.shape[0]):
+        if np.count_nonzero(Z.T[i] != 0) < y and np.count_nonzero(Z.T[i] != 0) != 0:
+            y = np.count_nonzero(Z.T[i] != 0)
+            idx = i
+            x = 'c'
+    return x, idx
 
 
 def ones(Z):
     z1 = np.zeros(Z.shape)
     z2 = np.zeros(Z.shape)
-    while np.count_nonzero(Z == 0) != Z.shape[0]**2:
-      x = find_min(Z)[0]
-      idx = find_min(Z)[1]
-      if x == 'r':
-        one = True
-        for i in range(Z.shape[0]):
-          if Z[idx][i] == 1:
-            z_1 = np.count_nonzero(z1[idx] != 0)
-            z_2 = np.count_nonzero(z2[idx] != 0)
-            if z_1 == z_2:
-              if one:
-                z1[idx][i] = 1
-                one = False
-                Z[idx][i] = 0
-              else:
-                z2[idx][i] = 1
-                one = True
-                Z[idx][i] = 0
-            elif z_1 < z_2:
-                z1[idx][i] = 1
-                one = False
-                Z[idx][i] = 0
-            else:
-              z2[idx][i] = 1
-              one = True
-              Z[idx][i] = 0
-      else:
-        one = True
-        for i in range(Z.shape[0]):
-          if Z[i][idx] == 1:
-            z_1 = np.count_nonzero(z1.T[idx] != 0)
-            z_2 = np.count_nonzero(z2.T[idx] != 0)
-            if z_1 == z_2:
-              if one:
-                z1[i][idx] = 1
-                one = False
-                Z[i][idx] = 0
-              else:
-                z2[i][idx] = 1
-                one = True
-                Z[i][idx] = 0
-            elif z_1 < z_2:
-                z1[i][idx] = 1
-                one = False
-                Z[i][idx] = 0
-            else:
-              z2[i][idx] = 1
-              one = True
-              Z[i][idx] = 0
+    while np.count_nonzero(Z == 0) != Z.shape[0] ** 2:
+        x = find_min(Z)[0]
+        idx = find_min(Z)[1]
+        if x == 'r':
+            one = True
+            for i in range(Z.shape[0]):
+                if Z[idx][i] == 1:
+                    z_1 = np.count_nonzero(z1[idx] != 0)
+                    z_2 = np.count_nonzero(z2[idx] != 0)
+                    if z_1 == z_2:
+                        if one:
+                            z1[idx][i] = 1
+                            one = False
+                            Z[idx][i] = 0
+                        else:
+                            z2[idx][i] = 1
+                            one = True
+                            Z[idx][i] = 0
+                    elif z_1 < z_2:
+                        z1[idx][i] = 1
+                        one = False
+                        Z[idx][i] = 0
+                    else:
+                        z2[idx][i] = 1
+                        one = True
+                        Z[idx][i] = 0
+        else:
+            one = True
+            for i in range(Z.shape[0]):
+                if Z[i][idx] == 1:
+                    z_1 = np.count_nonzero(z1.T[idx] != 0)
+                    z_2 = np.count_nonzero(z2.T[idx] != 0)
+                    if z_1 == z_2:
+                        if one:
+                            z1[i][idx] = 1
+                            one = False
+                            Z[i][idx] = 0
+                        else:
+                            z2[i][idx] = 1
+                            one = True
+                            Z[i][idx] = 0
+                    elif z_1 < z_2:
+                        z1[i][idx] = 1
+                        one = False
+                        Z[i][idx] = 0
+                    else:
+                        z2[i][idx] = 1
+                        one = True
+                        Z[i][idx] = 0
     return z1, z2
