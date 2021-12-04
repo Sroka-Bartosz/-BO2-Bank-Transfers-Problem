@@ -1,5 +1,6 @@
 import time
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 import EvolutionaryAlgorithm
@@ -51,6 +52,20 @@ def test_make_population(size_of_specimen, max_generated_value, size_of_populati
     print("Time: ", time.time() - start)
 
 
+def test_time_of_generate_population(max_generated_value):
+    size = np.logspace(0, 2, 100).astype('uint8')[10:]
+    print(size)
+    times = []
+    for s in size:
+        start = time.time()
+        problem_matrix = np.random.randint(low=0, high=max_generated_value, size=(s, s))
+        S = EvolutionaryAlgorithm.Specimen(problem_matrix)
+        S.initialize_matrix_change()
+        times.append(time.time() - start)
+    plt.plot(size, times)
+    plt.show()
+
+
 # TEST Evolutionary Algorithm
 def test_EA(size_of_specimen, max_generated_value, size_of_population, max_iteration, time_):
     # size_of_specimen - size of problem matrix
@@ -84,7 +99,6 @@ def test_EA(size_of_specimen, max_generated_value, size_of_population, max_itera
     print("The best Specimen:")
     best_Specimen.display()
 
-
 # test_permutation_creation_of_specimen(4, 3)
 # test_change_creation_of_specimen(4, 3)
 
@@ -92,8 +106,10 @@ def test_EA(size_of_specimen, max_generated_value, size_of_population, max_itera
 #                      max_generated_value=10,
 #                      size_of_population=10)
 
-test_EA(size_of_specimen=10,
-        max_generated_value=100,
-        size_of_population=20,
-        max_iteration=50,
-        time_=100)
+# test_time_of_generate_population(100)
+
+# test_EA(size_of_specimen=10,
+#         max_generated_value=100,
+#         size_of_population=20,
+#         max_iteration=50,
+#         time_=100)
