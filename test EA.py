@@ -5,94 +5,95 @@ import numpy as np
 import EvolutionaryAlgorithm
 
 
-# TEST initialize_matrix() method
+def test_permutation_creation_of_specimen(size_of_specimen, max_generated_value):
+    # size_of_specimen - size of problem matrix
+    # max_generated_value - maximal value of element in matrix
 
-# TEST 1
-def test1():
-    S = EvolutionaryAlgorithm.Specimen(3)
-    rows_ = [2,
-             2,
-             2]
-    columns_ = [1, 2, 3]
+    problem_matrix = np.random.randint(low=0, high=max_generated_value, size=(size_of_specimen, size_of_specimen))
+    np.fill_diagonal(problem_matrix, 0)
+
+    S = EvolutionaryAlgorithm.Specimen(problem_matrix)
+    print(problem_matrix)
+    print("quality: ", S.quality(), "\n")
+
     start = time.time()
-    S.initialize_matrix(columns_, rows_)
+    S.initialize_matrix_permutation()
     S.display()
     print("Time:    ", time.time() - start)
     print("quality: ", S.quality())
 
 
-# TEST 2
-def test2():
-    S = EvolutionaryAlgorithm.Specimen(6)
-    columns_ = [6, 8, 9, 6, 3, 7]
-    rows_ = [8, 3, 7, 9, 8, 4]
+def test_change_creation_of_specimen(size_of_specimen, max_generated_value):
+    # size_of_specimen - size of problem matrix
+    # max_generated_value - maximal value of element in matrix
+
+    problem_matrix = np.random.randint(low=0, high=max_generated_value, size=(size_of_specimen, size_of_specimen))
+    np.fill_diagonal(problem_matrix, 0)
+    S = EvolutionaryAlgorithm.Specimen(problem_matrix)
+    print(problem_matrix)
+    print("quality: ", S.quality(), "\n")
+
     start = time.time()
-    S.initialize_matrix(columns_, rows_)
+    S.initialize_matrix_change()
     S.display()
     print("Time:    ", time.time() - start)
     print("quality: ", S.quality())
 
-
-def random_test(size, max):
-    # size - size of problem matrix
-    # max - maximal value of element in sum of columns/rows
-
-    columns_ = list(np.random.randint(low=0, high=max, size=size))
-    rows_ = list(np.sort(columns_))
-    S = EvolutionaryAlgorithm.Specimen(size)
-    start = time.time()
-    S.initialize_matrix(columns_, rows_)
-    S.display()
-    print("Time:    ", time.time() - start)
-    print("quality: ", S.quality())
-
-
-# test1()
-# test2()
-# random_test(size=6, max=20)
 
 # TEST make_population method
-def test_population_make():
-    columns_ = [6, 8, 9, 6, 3, 7]
-    rows_ = [8, 3, 7, 9, 8, 4]
+def test_make_population(size_of_specimen, max_generated_value, size_of_population):
+    problem_matrix = np.random.randint(low=0, high=max_generated_value, size=(size_of_specimen, size_of_specimen))
+    np.fill_diagonal(problem_matrix, 0)
     start = time.time()
-    P = EvolutionaryAlgorithm.Population(columns_, rows_, 20)
-    P.make_population()
+    P = EvolutionaryAlgorithm.Population(size=size_of_population)
+    P.make_population(problem_matrix)
     P.display_population()
     print("Time: ", time.time() - start)
 
 
-# test_population_make()
-
-
+# TEST Evolutionary Algorithm
 def test_EA(size_of_specimen, max_generated_value, size_of_population, max_iteration, time_):
     # size_of_specimen - size of problem matrix
-    # max - maximal value of element in sum of columns/rows
+    # max_generated_value - maximal value of element in matrix
+    # size_of_population - length of specimens
     # max_iteration - maximal number of iteration
-    # time - time when end algorithm
+    # time_ - time when end algorithm
 
-    columns_ = list(np.random.randint(low=0, high=max_generated_value, size=size_of_specimen))
-    rows_ = list(np.sort(columns_))
+    # initialize of primitive specimen
+    problem_matrix = np.random.randint(low=0, high=max_generated_value, size=(size_of_specimen, size_of_specimen))
+    np.fill_diagonal(problem_matrix, 0)
+    primitive_specimen = EvolutionaryAlgorithm.Specimen(problem_matrix)
+    cols_, rows_ = primitive_specimen.cols, primitive_specimen.rows
 
-    print("columns:", columns_, "\t sum:", np.sum(columns_))
+    print("columns:", cols_, "\t sum:", np.sum(cols_))
     print("rows:   ", rows_, "\t sum:", np.sum(rows_), "\n")
 
-    S = EvolutionaryAlgorithm.Specimen(size_of_specimen)
+    # start Evolutionary Algorithm
     start = time.time()
-    best = EvolutionaryAlgorithm.ea(iterations=max_iteration, size_of_population=size_of_population, time=time_, columns=columns_, rows=rows_)
+    best_Specimen = EvolutionaryAlgorithm.ea(iterations=max_iteration,
+                                             size_of_population=size_of_population,
+                                             primitive_specimen=problem_matrix,
+                                             time=time_)
 
     print("\nTime:    ", time.time() - start)
-    print("Valid:   ", (list(np.sum(best.matrix, axis=0)) == list(columns_) and list(np.sum(best.matrix, axis=1)) == list(rows_)))
+
+    best_Specimen_cols = np.sum(best_Specimen.matrix, axis=0)
+    best_Specimen_rows = np.sum(best_Specimen.matrix, axis=1)
+
+    print("Valid:   ", (best_Specimen_cols == cols_).all() and (best_Specimen_rows == rows_).all())
     print("The best Specimen:")
-    best.display()
+    best_Specimen.display()
 
 
-test_EA(size_of_specimen=5,
-        max_generated_value=7,
-        size_of_population=10,
-        max_iteration=100,
+# test_permutation_creation_of_specimen(4, 3)
+# test_change_creation_of_specimen(4, 3)
+
+# test_make_population(size_of_specimen=3,
+#                      max_generated_value=10,
+#                      size_of_population=10)
+
+test_EA(size_of_specimen=10,
+        max_generated_value=100,
+        size_of_population=20,
+        max_iteration=50,
         time_=100)
-# prawdopodobieństwo mutacji/krzyżowania
-# liczba chronionych elementów
-# różne metody selekcji
-# krzyżowanie różnego typu osobników (elita -> plebs
