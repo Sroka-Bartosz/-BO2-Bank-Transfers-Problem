@@ -213,6 +213,9 @@ class Population(Specimen):
     def add_best_specimen_to_elite(self, best_specimen):
         self.elite = best_specimen
 
+    def number_of_specimen(self):
+        print(len(self.specimens))
+
     def display_population(self):
         for specimen in self.specimens:
             specimen.display()
@@ -229,7 +232,6 @@ def ea(iterations, size_of_population, time, primitive_specimen):
         [population.mutation() for i in range(10)]
         # [population.crossover() for i in range(10)]
         population.ranking_selection()
-
         if quality < best_specimen_.quality() or i == 1:
             print("iteration {0} - quality:\t".format(i), best_specimen_.quality())
             quality = best_specimen_.quality()
