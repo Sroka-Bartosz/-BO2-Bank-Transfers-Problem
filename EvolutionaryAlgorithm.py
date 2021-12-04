@@ -1,53 +1,67 @@
 import random
 import timeit
-import time
+
 import numpy as np
 
 import Functions
 
 
 class Specimen:
-    def __init__(self, size):
-        self.matrix = np.zeros((size, size))
-        self.size = size
-
-    def specimen_from_matrix(self, matrix):
+    def __init__(self, matrix):
+        self.size = matrix.shape[0]
+        self.rows = np.sum(matrix, axis=1)
+        self.cols = np.sum(matrix, axis=0)
         self.matrix = matrix
 
-    def initialize_matrix(self, columns, rows):
-        while list(np.sum(self.matrix, axis=0)) != columns:
-            temp_columns = columns
+    def initialize_matrix_permutation(self):
+        cols, rows = self.cols, self.rows
+        matrix = np.zeros_like(self.matrix)
+        while list(np.sum(matrix, axis=0)) != list(cols):
+            temp_columns = cols
             for row in range(self.size - 1):
                 permutation = list(Functions.sums(self.size, rows[row]))
                 rows_ = Functions.filter(permutation, temp_columns, row)
                 if len(rows_) == 0:
                     continue
                 idx_random_row = np.random.randint(len(rows_))
-                self.matrix[row] = rows_[idx_random_row]
-                temp_columns = [temp_columns[i] - self.matrix[row][i] for i in range(self.size)]
+                matrix[row] = rows_[idx_random_row]
+                temp_columns = [temp_columns[i] - matrix[row][i] for i in range(self.size)]
             if temp_columns[-1] != 0:
                 continue
-            self.matrix[-1] = temp_columns
+            matrix[-1] = temp_columns
+        self.matrix = matrix
+
+    def initialize_matrix_change(self):
+        while np.sum(self.matrix.diagonal()) != 0:
+            visit = [(row, col) for row in range(self.size) for col in range(self.size)]
+            matrix = np.zeros_like(self.matrix)
+            rows, cols = self.rows, self.cols
+            while visit:
+                row, col = random.choice(visit)
+                val = min(rows[row], cols[col])
+                matrix[row][col] = val
+                rows[row] = rows[row] - val
+                cols[col] = cols[col] - val
+                visit.remove((row, col))
+            self.matrix = matrix
 
     def quality(self):
-        return np.count_nonzero(self.matrix == 0)
+        return np.count_nonzero(self.matrix == 0) - self.size
 
     def display(self):
         print(self.matrix, "\n")
 
 
 class Population(Specimen):
-    def __init__(self, columns, rows, size):
-        super().__init__(size)
+    def __init__(self, size):
         self.specimens = []
-        self.size = 20
-        self.columns = columns
-        self.rows = rows
+        self.elite = None
+        self.size = size
 
-    def make_population(self):
+    def make_population(self, matrix):
         for i in range(self.size):
-            S = Specimen(len(self.columns))
-            S.initialize_matrix(self.columns, self.rows)
+            S = Specimen(matrix)
+            S.initialize_matrix_change()
             self.specimens.append(S)
 
     def mutation(self):
@@ -77,9 +91,7 @@ class Population(Specimen):
         random_specimen[col_1][row_2] = temp_matrix[1][0]
         random_specimen[col_2][row_2] = temp_matrix[1][1]
 
-        new_specimen = Specimen(b)
-        new_specimen.specimen_from_matrix(random_specimen)
-        self.specimens.append(new_specimen)
+        self.specimens.append(Specimen(random_specimen))
 
     def crossover(self):
         parent1 = random.choice(self.specimens)
@@ -108,14 +120,8 @@ class Population(Specimen):
             sum = 0
         REM1, REM2 = Functions.ones(REM)
 
-        child1 = Specimen(len(REM))
-        child2 = Specimen(len(REM))
-
-        child1.specimen_from_matrix(DIV + REM1)
-        child2.specimen_from_matrix(DIV + REM2)
-
-        self.specimens.append(child1)
-        self.specimens.append(child2)
+        self.specimens.append(Specimen(DIV + REM1))
+        self.specimens.append(Specimen(DIV + REM2))
 
     def roulette_selection(self):
         qualities = []
@@ -204,28 +210,33 @@ class Population(Specimen):
         max_index = qualities.index(max_value)
         return self.specimens[max_index]
 
+    def add_best_specimen_to_elite(self, best_specimen):
+        self.elite = best_specimen
+
     def display_population(self):
         for specimen in self.specimens:
             specimen.display()
 
 
-def ea(iterations, size_of_population, time, columns, rows):
+def ea(iterations, size_of_population, time, primitive_specimen):
     time_ea = 0
-    population = Population(columns=columns, rows=rows, size=size_of_population)
-    population.make_population()
+    population = Population(size=size_of_population)
+    population.make_population(primitive_specimen)
     best_specimen_ = population.specimens[0]
     quality = best_specimen_.quality()
     i = 1
     while i <= iterations:
+        [population.mutation() for i in range(10)]
+        # [population.crossover() for i in range(10)]
+        population.ranking_selection()
+
         if quality < best_specimen_.quality() or i == 1:
-            print("quality iteration {0}:\t".format(i), best_specimen_.quality())
-        quality = best_specimen_.quality()
-        for x in range(5):
-            population.mutation()
-        population.crossover()
-        population.selection()
+            print("iteration {0} - quality:\t".format(i), best_specimen_.quality())
+            quality = best_specimen_.quality()
+
         if population.best_specimen().quality() > best_specimen_.quality():
             best_specimen_ = population.best_specimen()
+
         time_ea += timeit.timeit()
         if time_ea >= time:
             break
