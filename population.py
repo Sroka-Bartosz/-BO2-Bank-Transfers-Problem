@@ -168,9 +168,9 @@ class Population(specimen.Specimen):
         print(len(self.specimens))
 
     def display_quality_changes(self, it):
-        if self.best_quality < self.best_specimen().quality():
-            self.best_quality = self.best_specimen().quality()
-            print("iteration {0} - quality:\t".format(it), self.best_quality)
+        best_quality_in_population = self.best_specimen().quality()
+        if self.best_quality < best_quality_in_population:
+            print("iteration {0} - quality:\t".format(it), best_quality_in_population)
 
     def display_population(self):
         for specimen_ in self.specimens:

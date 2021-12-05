@@ -30,7 +30,7 @@ def EvolutionaryAlgorithm(iterations, size_of_population, time, primitive_specim
         # get new best specimen
         if population_.best_specimen().quality() > population_.best_quality:
             best_specimen_ = population_.best_specimen()
-            population_.best_quality = best_specimen_.quality
+            population_.best_quality = best_specimen_.quality()
 
         # time stop condition
         time_ea += timeit.timeit()
