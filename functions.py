@@ -53,20 +53,20 @@ def separate(matrix):
     nonzero_index = np.transpose(array_nonzero)
     matrix_copy = np.copy(matrix)
     rows = []
-    sum = 0
+    sum_ = 0
     for i in range(len(matrix)):
         for j in range(len(matrix[0])):
-            sum += matrix[i][j]
-        rows.append(sum / 2)
-        sum = 0
+            sum_ += matrix[i][j]
+        rows.append(sum_ / 2)
+        sum_ = 0
 
     cols = []
-    sum = 0
+    sum_ = 0
     for i in range(len(matrix)):
         for j in range(len(matrix[0])):
-            sum += matrix[j][i]
-        cols.append(sum / 2)
-        sum = 0
+            sum_ += matrix[j][i]
+        cols.append(sum_ / 2)
+        sum_ = 0
     m = len(matrix)
     n = len(matrix[0])
     REM1 = np.zeros((m, n))
