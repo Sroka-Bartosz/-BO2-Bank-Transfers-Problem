@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import EvolutionaryAlgorithm
+import population
+import specimen
 
 
 def test_permutation_creation_of_specimen(size_of_specimen, max_generated_value):
@@ -13,7 +15,7 @@ def test_permutation_creation_of_specimen(size_of_specimen, max_generated_value)
     problem_matrix = np.random.randint(low=0, high=max_generated_value, size=(size_of_specimen, size_of_specimen))
     np.fill_diagonal(problem_matrix, 0)
 
-    S = EvolutionaryAlgorithm.Specimen(problem_matrix)
+    S = specimen.Specimen(problem_matrix)
     print(problem_matrix)
     print("quality: ", S.quality(), "\n")
 
@@ -30,7 +32,7 @@ def test_change_creation_of_specimen(size_of_specimen, max_generated_value):
 
     problem_matrix = np.random.randint(low=0, high=max_generated_value, size=(size_of_specimen, size_of_specimen))
     np.fill_diagonal(problem_matrix, 0)
-    S = EvolutionaryAlgorithm.Specimen(problem_matrix)
+    S = specimen.Specimen(problem_matrix)
     print(problem_matrix)
     print("quality: ", S.quality(), "\n")
 
@@ -46,7 +48,7 @@ def test_make_population(size_of_specimen, max_generated_value, size_of_populati
     problem_matrix = np.random.randint(low=0, high=max_generated_value, size=(size_of_specimen, size_of_specimen))
     np.fill_diagonal(problem_matrix, 0)
     start = time.time()
-    P = EvolutionaryAlgorithm.Population(size=size_of_population)
+    P = population.Population(size=size_of_population)
     P.make_population(problem_matrix)
     P.display_population()
     print("Time: ", time.time() - start)
@@ -59,7 +61,7 @@ def test_time_of_generate_population(max_generated_value):
     for s in size:
         start = time.time()
         problem_matrix = np.random.randint(low=0, high=max_generated_value, size=(s, s))
-        S = EvolutionaryAlgorithm.Specimen(problem_matrix)
+        S = specimen.Specimen(problem_matrix)
         S.initialize_matrix_change()
         times.append(time.time() - start)
     plt.plot(size, times)
@@ -77,7 +79,7 @@ def test_EA(size_of_specimen, max_generated_value, size_of_population, max_itera
     # initialize of primitive specimen
     problem_matrix = np.random.randint(low=0, high=max_generated_value, size=(size_of_specimen, size_of_specimen))
     np.fill_diagonal(problem_matrix, 0)
-    primitive_specimen = EvolutionaryAlgorithm.Specimen(problem_matrix)
+    primitive_specimen = specimen.Specimen(problem_matrix)
     cols_, rows_ = primitive_specimen.cols, primitive_specimen.rows
 
     print("columns:", cols_, "\t sum:", np.sum(cols_))
@@ -85,10 +87,10 @@ def test_EA(size_of_specimen, max_generated_value, size_of_population, max_itera
 
     # start Evolutionary Algorithm
     start = time.time()
-    best_Specimen = EvolutionaryAlgorithm.ea(iterations=max_iteration,
-                                             size_of_population=size_of_population,
-                                             primitive_specimen=problem_matrix,
-                                             time=time_)
+    best_Specimen = EvolutionaryAlgorithm.EvolutionaryAlgorithm(iterations=max_iteration,
+                                                                size_of_population=size_of_population,
+                                                                primitive_specimen=problem_matrix,
+                                                                time=time_)
 
     print("\nTime:    ", time.time() - start)
 
@@ -99,6 +101,7 @@ def test_EA(size_of_specimen, max_generated_value, size_of_population, max_itera
     print("The best Specimen:")
     best_Specimen.display()
 
+
 # test_permutation_creation_of_specimen(4, 3)
 # test_change_creation_of_specimen(4, 3)
 
@@ -108,8 +111,8 @@ def test_EA(size_of_specimen, max_generated_value, size_of_population, max_itera
 
 # test_time_of_generate_population(100)
 
-# test_EA(size_of_specimen=10,
-#         max_generated_value=100,
-#         size_of_population=20,
-#         max_iteration=50,
-#         time_=100)
+test_EA(size_of_specimen=10,
+        max_generated_value=100,
+        size_of_population=20,
+        max_iteration=50,
+        time_=100)
