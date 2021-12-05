@@ -3,7 +3,7 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 
-import EvolutionaryAlgorithm
+import evolutionaryAlgorithm
 import population
 import specimen
 
@@ -87,7 +87,7 @@ def test_EA(size_of_specimen, max_generated_value, size_of_population, max_itera
 
     # start Evolutionary Algorithm
     start = time.time()
-    best_Specimen = EvolutionaryAlgorithm.EvolutionaryAlgorithm(iterations=max_iteration,
+    best_Specimen = evolutionaryAlgorithm.EvolutionaryAlgorithm(iterations=max_iteration,
                                                                 size_of_population=size_of_population,
                                                                 primitive_specimen=problem_matrix,
                                                                 time=time_)
