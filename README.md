@@ -1,7 +1,7 @@
 # Bank Transfers Problem
 
 ## Description of the project files:
-####specimen.py 
+#### specimen.py 
 ###### - representing a instance of Specimen Class the elementary part of population
 ```
 class Specimen:
@@ -12,7 +12,7 @@ class Specimen:
         self.elite = False
         self.matrix = matrix
 ```
-####population.py
+#### population.py
 ###### - contains a Population class, a group of Specimen
 ```
 class Population(specimen.Specimen):
@@ -21,9 +21,9 @@ class Population(specimen.Specimen):
         self.size = size
         self.best_quality = 0
 ```
-####functions.py 
+#### functions.py 
 ###### - all used functions
-####EvolutionaryAlgorithm.py
+#### evolutionaryAlgorithm.py
 ###### - main of program
-####test EA
+#### test EA
 ###### - simple test of method and algorithm
