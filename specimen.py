@@ -10,7 +10,7 @@ class Specimen:
         self.size = matrix.shape[0]
         self.rows = np.sum(matrix, axis=1)
         self.cols = np.sum(matrix, axis=0)
-        self.elite = False
+        self.is_elite = False
         self.matrix = matrix
 
     def initialize_matrix_permutation(self):
