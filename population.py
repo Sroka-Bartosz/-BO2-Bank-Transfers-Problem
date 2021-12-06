@@ -15,7 +15,7 @@ class Population(specimen.Specimen):
     def make_population(self, matrix):
         for i in range(self.size):
             S = specimen.Specimen(matrix)
-            S.initialize_matrix_change()
+            S.initialize_matrix_permutation()
             self.specimens.append(S)
 
     def mutation(self):
@@ -166,6 +166,34 @@ class Population(specimen.Specimen):
 
     def number_of_specimen(self):
         print(len(self.specimens))
+
+    def sort_specimen_by_quality(self):
+        self.specimens.sort(reverse=True, key=lambda s: s.quality())
+
+    def get_previous_elite_quality_list(self):
+        self.sort_specimen_by_quality()
+        return [self.specimens[i] for i in range(self.size) if self.specimens[i].is_elite]
+
+    def choose_elite(self, size_of_elite, elite=[]):
+        if not elite:
+            elite = [specimen.Specimen(np.ones_like(np.eye(self.size)) - np.eye(self.size)) for i in
+                     range(size_of_elite)]
+        self.sort_specimen_by_quality()
+        for i in range(self.size):
+            s = self.specimens[i]
+            if i < size_of_elite:
+                if s.quality() > elite[i].quality():
+                    s.is_elite = True
+                else:
+                    s.is_elite = False
+            else:
+                s.is_elite = False
+
+    def display_elite(self):
+        for s in self.specimens:
+            if s.is_elite:
+                print("quality", s.quality(), end="")
+                s.display()
 
     def display_quality_changes(self, it):
         best_quality_in_population = self.best_specimen().quality()
