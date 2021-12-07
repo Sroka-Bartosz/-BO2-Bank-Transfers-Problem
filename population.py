@@ -183,7 +183,7 @@ class Population(specimen.Specimen):
         print(len(self.specimens))
 
     def sort_specimen_by_quality(self):
-        specimens = self.specimens
+        specimens = self.specimens[:]
         specimens.sort(reverse=True, key=lambda s: s.quality())
         return specimens
 
