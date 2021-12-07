@@ -79,8 +79,6 @@ def separate(matrix):
         rows[row] = rows[row] - val
         cols[col] = cols[col] - val
         nonzero_index = np.delete(nonzero_index, np.where(np.all(nonzero_index == q, axis=1)), axis=0)
-    # print("matrix before\n", matrix)
-    # print("matrix after\n", matrix_copy)
     return matrix_copy
 
 

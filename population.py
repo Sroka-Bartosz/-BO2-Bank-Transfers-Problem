@@ -18,7 +18,7 @@ class Population(specimen.Specimen):
             S.initialize_matrix_change()
             self.specimens.append(S)
 
-    def mutation(self):
+    def mutation(self, rows_number=2, cols_number=2):
         random_specimen = random.choice(self.specimens)
         self.specimens.remove(random_specimen)
         random_specimen = random_specimen.matrix
@@ -27,23 +27,37 @@ class Population(specimen.Specimen):
         b = len(random_specimen)
         c = len(random_specimen[0])
 
-        row_1, row_2 = random.sample([i for i in range(a, b)], k=2)
-        col_1, col_2 = random.sample([i for i in range(a, c) if i not in [row_1, row_2]], k=2)
+        rows = random.sample([i for i in range(a, b)], k=rows_number)
+        cols = random.sample([i for i in range(a, c) if i not in rows], k=cols_number)
+        temp_matrix_rows = []
+        temp_matrix = []
+        sum_rows = []
+        sum_row = 0
+        sum_cols = []
+        sum_col = 0
+        for i in rows:
+            for j in cols:
+                temp_matrix_rows.append(random_specimen[j][i])
+                sum_row += random_specimen[j][i]
+            temp_matrix.append(temp_matrix_rows)
+            temp_matrix_rows = []
+            sum_rows.append(sum_row)
+            sum_row = 0
 
-        temp_matrix = [[random_specimen[col_1][row_1], random_specimen[col_2][row_1]],
-                       [random_specimen[col_1][row_2], random_specimen[col_2][row_2]]]
+        for i in cols:
+            for j in rows:
+                sum_col += random_specimen[i][j]
+            sum_cols.append(sum_col)
+            sum_col = 0
 
-        sum_row1 = random_specimen[col_1][row_1] + random_specimen[col_2][row_1]
-        sum_row2 = random_specimen[col_1][row_2] + random_specimen[col_2][row_2]
-        sum_col1 = random_specimen[col_1][row_1] + random_specimen[col_1][row_2]
-        sum_col2 = random_specimen[col_2][row_1] + random_specimen[col_2][row_2]
-
-        temp_matrix = functions.change_matrix(temp_matrix, [sum_col1, sum_col2], [sum_row1, sum_row2])
-
-        random_specimen[col_1][row_1] = temp_matrix[0][0]
-        random_specimen[col_2][row_1] = temp_matrix[0][1]
-        random_specimen[col_1][row_2] = temp_matrix[1][0]
-        random_specimen[col_2][row_2] = temp_matrix[1][1]
+        temp_matrix = functions.change_matrix(temp_matrix, sum_cols, sum_rows)
+        a, b = 0, 0
+        for i in rows:
+            for j in cols:
+                random_specimen[j][i] = temp_matrix[a][b]
+                b += 1
+            a += 1
+            b = 0
 
         self.specimens.append(specimen.Specimen(random_specimen))
 
