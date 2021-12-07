@@ -3,7 +3,7 @@ import timeit
 import population
 
 
-def EvolutionaryAlgorithm(iterations, size_of_population, time, primitive_specimen, size_of_elite):
+def EvolutionaryAlgorithm(iterations, size_of_population, time, primitive_specimen, size_of_elite, number_of_mutations):
     time_ea, i = 0, 1
 
     # initialize of population
@@ -19,7 +19,7 @@ def EvolutionaryAlgorithm(iterations, size_of_population, time, primitive_specim
     # run i iterations of algorithm
     while i <= iterations:
         # mutate operator
-        [population_.mutation() for i in range(10)]
+        [population_.mutation() for i in range(number_of_mutations)]
 
         # crossover operator
         [population_.crossover() for i in range(10)]
