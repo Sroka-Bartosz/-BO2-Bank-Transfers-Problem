@@ -9,13 +9,14 @@ import specimen
 class Population(specimen.Specimen):
     def __init__(self, size):
         self.specimens = []
+        self.elite = []
         self.size = size
         self.best_quality = 0
 
     def make_population(self, matrix):
         for i in range(self.size):
             S = specimen.Specimen(matrix)
-            S.initialize_matrix_permutation()
+            S.initialize_matrix_change()
             self.specimens.append(S)
 
     def mutation(self, rows_number=2, cols_number=2):
@@ -182,38 +183,43 @@ class Population(specimen.Specimen):
         print(len(self.specimens))
 
     def sort_specimen_by_quality(self):
-        self.specimens.sort(reverse=True, key=lambda s: s.quality())
+        specimens = self.specimens
+        specimens.sort(reverse=True, key=lambda s: s.quality())
+        return specimens
 
-    def get_previous_elite_quality_list(self):
-        self.sort_specimen_by_quality()
-        return [self.specimens[i] for i in range(self.size) if self.specimens[i].is_elite]
+    def create_elite(self, size_of_elite):
+        sorted_specimens = self.sort_specimen_by_quality()
+        self.elite = sorted_specimens[:size_of_elite]
 
-    def choose_elite(self, size_of_elite, elite=[]):
-        if not elite:
-            elite = [specimen.Specimen(np.ones_like(np.eye(self.size)) - np.eye(self.size)) for i in
-                     range(size_of_elite)]
-        self.sort_specimen_by_quality()
-        for i in range(self.size):
-            s = self.specimens[i]
-            if i < size_of_elite:
-                if s.quality() > elite[i].quality():
-                    s.is_elite = True
-                else:
-                    s.is_elite = False
+    def update_elite(self):
+        sorted_specimens = self.sort_specimen_by_quality()
+        for e in range(len(self.elite)):
+            if sorted_specimens[e].quality() > self.elite[e].quality():
+                self.elite[e] = sorted_specimens[e]
             else:
-                s.is_elite = False
+                break
 
     def display_elite(self):
+        for e in self.elite:
+            e.display()
+
+    def display_population(self):
+        for specimen_ in self.specimens:
+            specimen_.display()
+
+    def display_elite_quality(self):
+        elite_quality = []
+        for e in self.elite:
+            elite_quality.append(e.quality())
+        print("elite:\t", elite_quality)
+
+    def display_population_quality(self):
+        population_quality = []
         for s in self.specimens:
-            if s.is_elite:
-                print("quality", s.quality(), end="")
-                s.display()
+            population_quality.append(s.quality())
+        print("population:\t", population_quality)
 
     def display_quality_changes(self, it):
         best_quality_in_population = self.best_specimen().quality()
         if self.best_quality < best_quality_in_population:
             print("iteration {0} - quality:\t".format(it), best_quality_in_population)
-
-    def display_population(self):
-        for specimen_ in self.specimens:
-            specimen_.display()
