@@ -13,15 +13,11 @@ def EvolutionaryAlgorithm(iterations, size_of_population, time, primitive_specim
     # choose first best specimen from initial population
     best_specimen_ = population_.specimens[0]
 
-    # choose first elite
-    population_.choose_elite(size_of_elite)
+    # create elite
+    population_.create_elite(size_of_elite=size_of_elite)
 
     # run i iterations of algorithm
     while i <= iterations:
-        population_.display_elite()
-
-        # get previous elite
-        previous_elite = population_.get_previous_elite_quality_list()
         # mutate operator
         [population_.mutation() for i in range(10)]
 
@@ -29,12 +25,14 @@ def EvolutionaryAlgorithm(iterations, size_of_population, time, primitive_specim
         [population_.crossover() for i in range(10)]
 
         # selection
-        population_.ranking_selection()
+        population_.tournament_selection()
 
         # update elite if better specimen in population
-        population_.choose_elite(size_of_elite=size_of_elite, elite=previous_elite)
+        population_.update_elite()
 
         # print quality changes
+        population_.display_elite_quality()
+        population_.display_population_quality()
         population_.display_quality_changes(i)
 
         # get new best specimen
