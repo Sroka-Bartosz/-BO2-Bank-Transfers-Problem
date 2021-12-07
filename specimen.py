@@ -10,7 +10,6 @@ class Specimen:
         self.size = matrix.shape[0]
         self.rows = np.sum(matrix, axis=1)
         self.cols = np.sum(matrix, axis=0)
-        self.is_elite = False
         self.matrix = matrix
 
     def initialize_matrix_permutation(self):
@@ -46,7 +45,7 @@ class Specimen:
             self.matrix = matrix
 
     def quality(self):
-        return np.count_nonzero(self.matrix == 0) - self.size
+        return np.count_nonzero(self.matrix == 0)
 
     def display(self):
         print(self.matrix, "\n")
