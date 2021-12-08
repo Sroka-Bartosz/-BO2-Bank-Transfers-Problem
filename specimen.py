@@ -31,10 +31,11 @@ class Specimen:
         self.matrix = matrix
 
     def initialize_matrix_change(self):
-        while np.sum(self.matrix.diagonal()) != 0:
+        first_loop = True
+        while np.sum(self.matrix.diagonal()) != 0 or first_loop:
             visit = [(row, col) for row in range(self.size) for col in range(self.size)]
+            rows, cols = self.rows.copy(), self.cols.copy()
             matrix = np.zeros_like(self.matrix)
-            rows, cols = self.rows, self.cols
             while visit:
                 row, col = random.choice(visit)
                 val = min(rows[row], cols[col])
@@ -43,6 +44,7 @@ class Specimen:
                 cols[col] = cols[col] - val
                 visit.remove((row, col))
             self.matrix = matrix
+            first_loop = False
 
     def quality(self):
         return np.count_nonzero(self.matrix == 0)
