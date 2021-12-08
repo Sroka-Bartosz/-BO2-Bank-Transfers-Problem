@@ -45,6 +45,7 @@ class Specimen:
                 visit.remove((row, col))
             self.matrix = matrix
             first_loop = False
+        self.matrix = np.abs(np.ones_like(self.matrix) - np.eye(self.matrix.shape[0], self.matrix.shape[1]) - self.matrix)
 
     def quality(self):
         return np.count_nonzero(self.matrix == 0)
