@@ -151,3 +151,9 @@ def ones(Z):
                         one = True
                         Z[i][idx] = 0
     return z1, z2
+
+
+def initialize_primitive_specimen(size_of_specimen, max_generated_value):
+    problem_matrix = np.random.randint(low=0, high=max_generated_value, size=(size_of_specimen, size_of_specimen))
+    np.fill_diagonal(problem_matrix, 0)
+    return problem_matrix
