@@ -3,7 +3,15 @@ import timeit
 import population
 
 
-def EvolutionaryAlgorithm(iterations, size_of_population, time, primitive_specimen, size_of_elite, number_of_mutations):
+def EvolutionaryAlgorithm(
+        primitive_specimen,
+        size_of_population: int = 20,
+        iterations: int = 50,
+        time: int = 1000,
+        size_of_elite: int = 1,
+        number_of_mutations: int = 0,
+        number_of_crossover: int = 0,
+        selection_type: str = "roulette"):
     time_ea, i = 0, 1
 
     # initialize of population
@@ -18,21 +26,21 @@ def EvolutionaryAlgorithm(iterations, size_of_population, time, primitive_specim
 
     # run i iterations of algorithm
     while i <= iterations:
-        # mutate operator
+        # mutation
         [population_.mutation() for i in range(number_of_mutations)]
 
-        # crossover operator
-        [population_.crossover() for i in range(10)]
+        # crossover
+        [population_.crossover() for i in range(number_of_crossover)]
 
         # selection
-        population_.tournament_selection()
+        population_.selection(selection_type=selection_type)
 
         # update elite if better specimen in population
         population_.update_elite()
 
         # print quality changes
-        population_.display_elite_quality()
-        population_.display_population_quality()
+        # population_.display_elite_quality()
+        # population_.display_population_quality()
         population_.display_quality_changes(i)
 
         # get new best specimen

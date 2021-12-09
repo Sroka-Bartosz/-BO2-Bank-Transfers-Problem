@@ -5,6 +5,7 @@ import numpy as np
 
 import evolutionaryAlgorithm
 import population
+import functions
 import specimen
 
 
@@ -69,16 +70,27 @@ def test_time_of_generate_population(max_generated_value):
 
 
 # TEST Evolutionary Algorithm
-def test_EA(size_of_specimen, max_generated_value, size_of_population, max_iteration, time_, size_of_elite=1):
+def test_EA(size_of_specimen,
+            max_generated_value,
+            size_of_population: int = 20,
+            iterations: int = 50,
+            time_: int = 1000,
+            size_of_elite: int = 1,
+            number_of_mutations: int = 0,
+            number_of_crossover: int = 0,
+            selection_type: str = "roulette"):
+
     # size_of_specimen - size of problem matrix
     # max_generated_value - maximal value of element in matrix
     # size_of_population - length of specimens
-    # max_iteration - maximal number of iteration
+    # iteration = maximal number of iteration
     # time_ - time when end algorithm
+    # size_of_elite - length of elite
+    # number_of_mutation - parameters defined how many mutation in population was made.
+    # selection_type - choose type of selection
 
     # initialize of primitive specimen
-    problem_matrix = np.random.randint(low=0, high=max_generated_value, size=(size_of_specimen, size_of_specimen))
-    np.fill_diagonal(problem_matrix, 0)
+    problem_matrix = functions.initialize_primitive_specimen(size_of_specimen, max_generated_value)
     primitive_specimen = specimen.Specimen(problem_matrix)
     cols_, rows_ = primitive_specimen.cols, primitive_specimen.rows
 
@@ -87,11 +99,14 @@ def test_EA(size_of_specimen, max_generated_value, size_of_population, max_itera
 
     # start Evolutionary Algorithm
     start = time.time()
-    best_Specimen = evolutionaryAlgorithm.EvolutionaryAlgorithm(iterations=max_iteration,
+    best_Specimen = evolutionaryAlgorithm.EvolutionaryAlgorithm(primitive_specimen=problem_matrix,
                                                                 size_of_population=size_of_population,
-                                                                primitive_specimen=problem_matrix,
+                                                                iterations=iterations,
                                                                 time=time_,
-                                                                size_of_elite=size_of_elite)
+                                                                size_of_elite=size_of_elite,
+                                                                number_of_mutations=number_of_mutations,
+                                                                number_of_crossover=number_of_crossover,
+                                                                selection_type=selection_type)
 
     print("\nTime:    ", time.time() - start)
 
@@ -106,15 +121,18 @@ def test_EA(size_of_specimen, max_generated_value, size_of_population, max_itera
 # test_permutation_creation_of_specimen(4, 3)
 # test_change_creation_of_specimen(4, 3)
 
-# test_make_population(size_of_specimen=3,
-#                      max_generated_value=10,
+# test_make_population(size_of_specimen=10,
+#                      max_generated_value=100,
 #                      size_of_population=10)
 
-# test_time_of_generate_population(100)
-
-test_EA(size_of_specimen=4,
-        max_generated_value=5,
-        size_of_population=20,
-        max_iteration=10,
-        time_=100,
-        size_of_elite=2)
+# test_time_of_generate_population(10)
+#
+test_EA(size_of_specimen=5,
+        max_generated_value=10,
+        # size_of_population=20,
+        iterations=10,
+        # time=10,
+        # size_of_elite=5,
+        number_of_mutations=5,
+        number_of_crossover=5,
+        selection_type='tournament')
