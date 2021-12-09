@@ -92,6 +92,18 @@ class Population(specimen.Specimen):
         self.specimens.append(specimen.Specimen(DIV + REM1))
         self.specimens.append(specimen.Specimen(DIV + REM2))
 
+    def selection(self, selection_type):
+        if not isinstance(selection_type, str):
+            raise Exception('ERROR: incorrect type of selection_type want str, got {0}'.format(type(selection_type)))
+        if selection_type == 'roulette':
+            self.roulette_selection()
+        elif selection_type == 'ranking':
+            self.ranking_selection()
+        elif selection_type == 'tournament':
+            self.tournament_selection()
+        else:
+            raise ValueError('ERROR: incorrect type of selection, choose one from [roulette, ranking, tournament]')
+
     def roulette_selection(self):
         qualities = []
         probabilities = {}
@@ -155,8 +167,6 @@ class Population(specimen.Specimen):
         #         min_value = min(qualities)
         #         min_index = qualities.index(min_value)
         #         self.specimens[min_index] = self.elite[j]
-
-
 
     def tournament_selection(self):
         count_groups = self.size // 3
