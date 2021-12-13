@@ -157,7 +157,8 @@ if __name__ == "__main__":
     cols_, rows_ = primitive_specimen.cols, primitive_specimen.rows
 
     print("columns:", cols_, "\t sum:", np.sum(cols_))
-    print("rows:   ", rows_, "\t sum:", np.sum(rows_), "\n")
+    print("rows:   ", rows_, "\t sum:", np.sum(rows_))
+    print("\niteration 0 - quality:\t", primitive_specimen.quality())
 
     # start Evolutionary Algorithm
     start = time.time()
