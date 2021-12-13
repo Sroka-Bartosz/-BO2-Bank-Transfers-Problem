@@ -21,6 +21,9 @@ class Population(specimen.Specimen):
 
     def mutation(self, rows_number=2, cols_number=2):
         random_specimen = random.choice(self.specimens)
+        # ELITE
+        # while random_specimen in self.elite:
+        #     random_specimen = random.choice(self.specimens)
         self.specimens.remove(random_specimen)
         random_specimen = random_specimen.matrix
 

@@ -127,10 +127,10 @@ def test_EA(size_of_specimen,
 
 # test_time_of_generate_population(10)
 #
-test_EA(size_of_specimen=5,
-        max_generated_value=10,
-        # size_of_population=20,
-        iterations=10,
+test_EA(size_of_specimen=10,
+        max_generated_value=100,
+        size_of_population=20,
+        iterations=20,
         # time=10,
         # size_of_elite=5,
         number_of_mutations=5,

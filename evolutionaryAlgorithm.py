@@ -27,7 +27,7 @@ def EvolutionaryAlgorithm(
     # run i iterations of algorithm
     while i <= iterations:
         # mutation
-        [population_.mutation() for i in range(number_of_mutations)]
+        [population_.mutation(rows_number=4, cols_number=5) for i in range(number_of_mutations)]
 
         # crossover
         [population_.crossover() for i in range(number_of_crossover)]

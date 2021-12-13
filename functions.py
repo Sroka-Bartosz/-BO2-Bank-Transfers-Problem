@@ -67,9 +67,7 @@ def separate(matrix):
             sum_ += matrix[j][i]
         cols.append(sum_ / 2)
         sum_ = 0
-    m = len(matrix)
-    n = len(matrix[0])
-    REM1 = np.zeros((m, n))
+
     while len(nonzero_index) > 0:
         q = random.choice(nonzero_index)
         row = q[0]
