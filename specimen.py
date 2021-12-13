@@ -99,4 +99,4 @@ class Specimen:
         return np.count_nonzero(self.matrix == 0)
 
     def display(self):
-        print(self.matrix, "\n")
+        print(self.matrix.astype('uint8'), "\n")
