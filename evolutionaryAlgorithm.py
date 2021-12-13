@@ -1,4 +1,5 @@
 import timeit
+from typing import List
 
 import population
 
@@ -10,6 +11,7 @@ def EvolutionaryAlgorithm(
         time: int = 1000,
         size_of_elite: int = 1,
         number_of_mutations: int = 0,
+        size_of_mutation: List = [2, 2],
         number_of_crossover: int = 0,
         selection_type: str = "roulette"):
     time_ea, i = 0, 1
@@ -27,7 +29,7 @@ def EvolutionaryAlgorithm(
     # run i iterations of algorithm
     while i <= iterations:
         # mutation
-        [population_.mutation(rows_number=4, cols_number=5) for i in range(number_of_mutations)]
+        [population_.mutation(size_of_mutation[0], size_of_mutation[1]) for i in range(number_of_mutations)]
 
         # crossover
         [population_.crossover() for i in range(number_of_crossover)]
