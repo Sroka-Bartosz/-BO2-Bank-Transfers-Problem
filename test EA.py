@@ -37,11 +37,18 @@ def test_change_creation_of_specimen(size_of_specimen, max_generated_value):
     print(problem_matrix)
     print("quality: ", S.quality(), "\n")
 
+    cols_, rows_ = S.cols, S.rows
+
     start = time.time()
     S.initialize_matrix_change()
     S.display()
+
+    init_cols = np.sum(S.matrix, axis=0)
+    init_rows = np.sum(S.matrix, axis=1)
+
     print("Time:    ", time.time() - start)
     print("quality: ", S.quality())
+    print("Valid:   ", (init_cols == cols_).all() and (init_rows == rows_).all())
 
 
 # TEST make_population method
