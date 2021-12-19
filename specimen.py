@@ -32,6 +32,24 @@ class Specimen:
 
     def initialize_matrix_change(self):
         first_loop = True
+        self.matrix -= (np.ones_like(self.matrix) - np.eye(self.matrix.shape[0])).astype('uint8')
+        while np.sum(self.matrix.diagonal()) != 0 or first_loop:
+            visit = [(row, col) for row in range(self.size) for col in range(self.size)]
+            rows, cols = [row - (self.size - 1) for row in self.rows], [col - (self.size - 1) for col in self.cols]
+            matrix = np.zeros_like(self.matrix)
+            while visit:
+                row, col = random.choice(visit)
+                val = min(rows[row], cols[col])
+                matrix[row][col] = val
+                rows[row] -= val
+                cols[col] -= val
+                visit.remove((row, col))
+            self.matrix = matrix
+            first_loop = False
+            self.matrix += (np.ones_like(self.matrix) - np.eye(self.matrix.shape[0])).astype('uint8')
+
+    def initialize_matrix_change2(self):
+        first_loop = True
         matrix_ = np.zeros((len(self.matrix), len(self.matrix[0])), int)
         np.fill_diagonal(matrix_, 1)
 
@@ -93,10 +111,8 @@ class Specimen:
             first_loop = False
         self.matrix = matrix_
 
-        # self.matrix = np.abs(np.ones_like(self.matrix) - np.eye(self.matrix.shape[0], self.matrix.shape[1]) - self.matrix)
-
     def quality(self):
         return np.count_nonzero(self.matrix == 0)
 
     def display(self):
-        print(self.matrix.astype('uint8'), "\n")
+        print(self.matrix, "\n")
