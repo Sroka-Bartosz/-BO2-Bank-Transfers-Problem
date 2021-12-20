@@ -80,28 +80,70 @@ def separate(matrix):
     return matrix_copy
 
 
-def find_min(Z):
+def valid_test(m1, m2):
+    m1_cols = np.sum(m1, axis=0)
+    m1_rows = np.sum(m1, axis=1)
+    m2_cols = np.sum(m2, axis=0)
+    m2_rows = np.sum(m2, axis=1)
+
+    return (m1_cols == m2_cols).all() and (m1_rows == m2_rows).all()
+
+
+def find_min(Z, case=1):
     x = 'r'
     y = Z.shape[0]
     idx = 0
-    for i in range(Z.shape[0]):
-        if np.count_nonzero(Z[i] != 0) < y and np.count_nonzero(Z[i] != 0) != 0:
-            y = np.count_nonzero(Z[i] != 0)
-            idx = i
-    for i in range(Z.shape[0]):
-        if np.count_nonzero(Z.T[i] != 0) < y and np.count_nonzero(Z.T[i] != 0) != 0:
-            y = np.count_nonzero(Z.T[i] != 0)
-            idx = i
-            x = 'c'
+
+    if case == 1:
+        for i in range(Z.shape[0]):
+            if np.count_nonzero(Z[i] != 0) < y and np.count_nonzero(Z[i] != 0) != 0:
+                y = np.count_nonzero(Z[i] != 0)
+                idx = i
+        for i in range(Z.shape[0]):
+            if np.count_nonzero(Z.T[i] != 0) < y and np.count_nonzero(Z.T[i] != 0) != 0:
+                y = np.count_nonzero(Z.T[i] != 0)
+                idx = i
+                x = 'c'
+    if case == 2:
+        for i in range(Z.shape[0]):
+            if np.count_nonzero(Z[i] != 0) <= y and np.count_nonzero(Z[i] != 0) != 0:
+                y = np.count_nonzero(Z[i] != 0)
+                idx = i
+        for i in range(Z.shape[0]):
+            if np.count_nonzero(Z.T[i] != 0) < y and np.count_nonzero(Z.T[i] != 0) != 0:
+                y = np.count_nonzero(Z.T[i] != 0)
+                idx = i
+                x = 'c'
+    if case == 3:
+        for i in range(Z.shape[0]):
+            if np.count_nonzero(Z[i] != 0) < y and np.count_nonzero(Z[i] != 0) != 0:
+                y = np.count_nonzero(Z[i] != 0)
+                idx = i
+        for i in range(Z.shape[0]):
+            if np.count_nonzero(Z.T[i] != 0) <= y and np.count_nonzero(Z.T[i] != 0) != 0:
+                y = np.count_nonzero(Z.T[i] != 0)
+                idx = i
+                x = 'c'
+    if case == 4:
+        for i in range(Z.shape[0]):
+            if np.count_nonzero(Z[i] != 0) <= y and np.count_nonzero(Z[i] != 0) != 0:
+                y = np.count_nonzero(Z[i] != 0)
+                idx = i
+        for i in range(Z.shape[0]):
+            if np.count_nonzero(Z.T[i] != 0) <= y and np.count_nonzero(Z.T[i] != 0) != 0:
+                y = np.count_nonzero(Z.T[i] != 0)
+                idx = i
+                x = 'c'
     return x, idx
 
 
-def ones(Z):
+def ones(Z, case=1):
+    Z1 = deepcopy(Z)
     z1 = np.zeros(Z.shape)
     z2 = np.zeros(Z.shape)
     while np.count_nonzero(Z == 0) != Z.shape[0] ** 2:
-        x = find_min(Z)[0]
-        idx = find_min(Z)[1]
+        x = find_min(Z, case)[0]
+        idx = find_min(Z, case)[1]
         if x == 'r':
             one = True
             for i in range(Z.shape[0]):
@@ -148,7 +190,11 @@ def ones(Z):
                         z2[i][idx] = 1
                         one = True
                         Z[i][idx] = 0
-    return z1, z2
+
+    if valid_test(z1, z2):
+        return z1, z2
+    else:
+        return ones(Z1, case + 1)
 
 
 def initialize_primitive_specimen(size_of_specimen, max_generated_value):
