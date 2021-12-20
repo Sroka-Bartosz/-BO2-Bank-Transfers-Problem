@@ -194,7 +194,10 @@ def ones(Z, case=1):
     if valid_test(z1, z2):
         return z1, z2
     else:
-        return ones(Z1, case + 1)
+        if case == 4:
+            return Z, Z
+        else:
+            return ones(Z1, case + 1)
 
 
 def initialize_primitive_specimen(size_of_specimen, max_generated_value):
