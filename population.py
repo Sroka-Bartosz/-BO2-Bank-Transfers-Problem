@@ -1,7 +1,7 @@
 import random
 
 import numpy as np
-
+import copy
 import functions
 import specimen
 
@@ -21,9 +21,9 @@ class Population(specimen.Specimen):
 
     def mutation(self, rows_number=2, cols_number=2):
         random_specimen = random.choice(self.specimens)
-        # ELITE
-        # while random_specimen in self.elite:
-        #     random_specimen = random.choice(self.specimens)
+        # if elite:
+        #   while random_specimen in self.elite:
+        #      random_specimen = random.choice(self.specimens)
         self.specimens.remove(random_specimen)
         random_specimen = random_specimen.matrix
 
@@ -68,6 +68,7 @@ class Population(specimen.Specimen):
     def crossover(self):
         parent1_ = random.choice(self.specimens)
         self.specimens.remove(parent1_)
+
         parent2_ = random.choice(self.specimens)
         self.specimens.remove(parent2_)
 
@@ -75,11 +76,14 @@ class Population(specimen.Specimen):
         parent2 = parent2_.matrix
         DIV = (parent1 + parent2) // 2
         REM = (parent1 + parent2) % 2
-        
-        REM1, REM2 = functions.ones(REM)
 
-        child1 = specimen.Specimen(DIV + REM1)
-        child2 = specimen.Specimen(DIV + REM2)
+        REM1, REM2 = functions.ones(REM)
+        if REM1+REM2 is not REM:
+            child1 = parent1_
+            child2 = parent2_
+        else:
+            child1 = specimen.Specimen(DIV + REM1)
+            child2 = specimen.Specimen(DIV + REM2)
 
         self.specimens.append(child1)
         self.specimens.append(child2)
@@ -229,7 +233,7 @@ class Population(specimen.Specimen):
         sorted_specimens = self.sort_specimen_by_quality()
         for e in range(len(self.elite)):
             if sorted_specimens[e].quality() > self.elite[e].quality():
-                self.elite[e] = sorted_specimens[e]
+                self.elite[e] = copy.deepcopy(sorted_specimens[e])
             else:
                 break
 
