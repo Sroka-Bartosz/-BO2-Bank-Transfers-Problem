@@ -55,10 +55,13 @@ def test_change_creation_of_specimen(size_of_specimen, max_generated_value):
 def test_make_population(size_of_specimen, max_generated_value, size_of_population):
     problem_matrix = np.random.randint(low=0, high=max_generated_value, size=(size_of_specimen, size_of_specimen))
     np.fill_diagonal(problem_matrix, 0)
+    S2 = specimen.Specimen(problem_matrix)
     start = time.time()
     P = population.Population(size=size_of_population)
     P.make_population(problem_matrix)
-    P.display_population()
+    for S1 in P.specimens:
+        S1.display()
+        print("Valid:   ", (S1.cols == S2.cols).all() and (S1.rows == S2.rows).all(), "\n")
     print("Time: ", time.time() - start)
 
 
@@ -74,6 +77,31 @@ def test_time_of_generate_population(max_generated_value):
         times.append(time.time() - start)
     plt.plot(size, times)
     plt.show()
+
+
+def test_mutation(size_of_specimen, max_generated_value, rows_number, cols_number):
+    # size_of_specimen - size of problem matrix
+    # max_generated_value - maximal value of element in matrix
+
+    problem_matrix = np.random.randint(low=0, high=max_generated_value, size=(size_of_specimen, size_of_specimen))
+    np.fill_diagonal(problem_matrix, 0)
+    S1 = specimen.Specimen(problem_matrix)
+
+    print("columns:", S1.cols, "\t sum:", sum(S1.cols))
+    print("rows:   ", S1.rows, "\t sum:", sum(S1.rows), "\n")
+    print(problem_matrix)
+    print("quality: ", S1.quality(), "\n")
+
+    start = time.time()
+    P = population.Population(1)
+    mutate_matrix = P.elementary_mutation(S1, rows_number=rows_number, cols_number=cols_number)
+
+    S2 = specimen.Specimen(mutate_matrix)
+    print(mutate_matrix)
+    print("quality: ", S2.quality())
+    print("Time:    ", time.time() - start)
+
+    print("Valid:   ", (S1.cols == S2.cols).all() and (S1.rows == S2.rows).all())
 
 
 # TEST Evolutionary Algorithm
@@ -127,13 +155,15 @@ def random_test_EA(size_of_specimen,
 
 
 # test_permutation_creation_of_specimen(4, 3)
-# test_change_creation_of_specimen(4, 3)
-
-# test_make_population(size_of_specimen=12,
-#                      max_generated_value=100,
+# test_change_creation_of_specimen(5,10)
+#
+# test_make_population(size_of_specimen=6,
+#                      max_generated_value=30,
 #                      size_of_population=10)
 
 # test_time_of_generate_population(10)
+
+# test_mutation(8, 2, 4, 4)
 
 # random_test_EA(size_of_specimen=10,
 #                max_generated_value=100,
@@ -173,7 +203,7 @@ if __name__ == "__main__":
                                                                 size_of_population=20,
                                                                 iterations=100,
                                                                 # time=,
-                                                                # size_of_elite=,
+                                                                size_of_elite=4,
                                                                 number_of_mutations=5,
                                                                 size_of_mutation=[6, 6],
                                                                 number_of_crossover=5,
