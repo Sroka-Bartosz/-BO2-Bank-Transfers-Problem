@@ -227,7 +227,7 @@ class Population(specimen.Specimen):
 
     def create_elite(self, size_of_elite):
         sorted_specimens = self.sort_specimen_by_quality()
-        self.elite = sorted_specimens[:size_of_elite]
+        self.elite = copy.deepcopy(sorted_specimens[:size_of_elite])
 
     def update_elite(self):
         sorted_specimens = self.sort_specimen_by_quality()
