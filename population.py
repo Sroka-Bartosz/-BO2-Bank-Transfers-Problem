@@ -66,34 +66,24 @@ class Population(specimen.Specimen):
         self.specimens.append(specimen.Specimen(random_specimen))
 
     def crossover(self):
-        parent1 = random.choice(self.specimens)
-        self.specimens.remove(parent1)
-        parent2 = random.choice(self.specimens)
-        self.specimens.remove(parent2)
+        parent1_ = random.choice(self.specimens)
+        self.specimens.remove(parent1_)
+        parent2_ = random.choice(self.specimens)
+        self.specimens.remove(parent2_)
 
-        parent1 = parent1.matrix
-        parent2 = parent2.matrix
+        parent1 = parent1_.matrix
+        parent2 = parent2_.matrix
         DIV = (parent1 + parent2) // 2
         REM = (parent1 + parent2) % 2
-        sum_row = []
-        sum_ = 0
-        for i in range(len(REM)):
-            for j in range(len(REM[0])):
-                sum_ += REM[i][j]
-            sum_row.append(sum_ / 2)
-            sum_ = 0
-
-        sum_col = []
-        sum_ = 0
-        for i in range(len(REM)):
-            for j in range(len(REM[0])):
-                sum_ += REM[j][i]
-            sum_col.append(sum_ / 2)
-            sum_ = 0
+        
         REM1, REM2 = functions.ones(REM)
 
-        self.specimens.append(specimen.Specimen(DIV + REM1))
-        self.specimens.append(specimen.Specimen(DIV + REM2))
+        child1 = specimen.Specimen(DIV + REM1)
+        child2 = specimen.Specimen(DIV + REM2)
+
+        self.specimens.append(child1)
+        self.specimens.append(child2)
+        return parent1_, parent2_, child1, child2
 
     def selection(self, selection_type):
         if not isinstance(selection_type, str):

@@ -1,5 +1,5 @@
 import random
-
+import copy
 import numpy as np
 
 
@@ -138,7 +138,7 @@ def find_min(Z, case=1):
 
 
 def ones(Z, case=1):
-    Z1 = deepcopy(Z)
+    Z1 = copy.deepcopy(Z)
     z1 = np.zeros(Z.shape)
     z2 = np.zeros(Z.shape)
     while np.count_nonzero(Z == 0) != Z.shape[0] ** 2:
