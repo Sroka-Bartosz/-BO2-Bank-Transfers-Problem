@@ -19,20 +19,19 @@ class Population(specimen.Specimen):
             S.initialize_matrix_change()
             self.specimens.append(S)
 
-    def mutation(self, rows_number=2, cols_number=2):
+    def choose_specimen_to_mutation(self):
         random_specimen = random.choice(self.specimens)
-        # if elite:
-        #   while random_specimen in self.elite:
-        #      random_specimen = random.choice(self.specimens)
+        while random_specimen in self.elite:
+            random_specimen = random.choice(self.specimens)
         self.specimens.remove(random_specimen)
-        random_specimen = random_specimen.matrix
+        return random_specimen
 
-        a = 0
-        b = len(random_specimen)
-        c = len(random_specimen[0])
+    def elementary_mutation(self, mutate_specimen, rows_number, cols_number):
+        rows = random.sample([i for i in range(mutate_specimen.size)], k=rows_number)
+        cols = random.sample([i for i in range(mutate_specimen.size) if i not in rows], k=cols_number)
 
-        rows = random.sample([i for i in range(a, b)], k=rows_number)
-        cols = random.sample([i for i in range(a, c) if i not in rows], k=cols_number)
+        mutate_specimen = mutate_specimen.matrix
+
         temp_matrix_rows = []
         temp_matrix = []
         sum_rows = []
@@ -41,8 +40,8 @@ class Population(specimen.Specimen):
         sum_col = 0
         for i in rows:
             for j in cols:
-                temp_matrix_rows.append(random_specimen[j][i])
-                sum_row += random_specimen[j][i]
+                temp_matrix_rows.append(mutate_specimen[j][i])
+                sum_row += mutate_specimen[j][i]
             temp_matrix.append(temp_matrix_rows)
             temp_matrix_rows = []
             sum_rows.append(sum_row)
@@ -50,7 +49,7 @@ class Population(specimen.Specimen):
 
         for i in cols:
             for j in rows:
-                sum_col += random_specimen[i][j]
+                sum_col += mutate_specimen[i][j]
             sum_cols.append(sum_col)
             sum_col = 0
 
@@ -58,12 +57,16 @@ class Population(specimen.Specimen):
         a, b = 0, 0
         for i in rows:
             for j in cols:
-                random_specimen[j][i] = temp_matrix[a][b]
+                mutate_specimen[j][i] = temp_matrix[a][b]
                 b += 1
             a += 1
             b = 0
+        return mutate_specimen
 
-        self.specimens.append(specimen.Specimen(random_specimen))
+    def mutation(self, rows_number=2, cols_number=2):
+        random_specimen = self.choose_specimen_to_mutation()
+        mutate_specimen = self.elementary_mutation(random_specimen, rows_number=rows_number, cols_number=cols_number)
+        self.specimens.append(specimen.Specimen(mutate_specimen))
 
     def crossover(self):
         parent1_ = random.choice(self.specimens)
