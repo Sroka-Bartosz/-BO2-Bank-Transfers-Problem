@@ -32,7 +32,7 @@ class Specimen:
 
     def initialize_matrix_change(self):
         first_loop = True
-        self.matrix -= (np.ones_like(self.matrix) - np.eye(self.matrix.shape[0])).astype('uint8')
+        self.matrix - (np.ones_like(self.matrix) - np.eye(self.matrix.shape[0])).astype('uint8')
         while np.sum(self.matrix.diagonal()) != 0 or first_loop:
             visit = [(row, col) for row in range(self.size) for col in range(self.size)]
             rows, cols = [row - (self.size - 1) for row in self.rows], [col - (self.size - 1) for col in self.cols]
@@ -44,9 +44,8 @@ class Specimen:
                 rows[row] -= val
                 cols[col] -= val
                 visit.remove((row, col))
-            self.matrix = matrix
+            self.matrix = matrix + (np.ones_like(self.matrix) - np.eye(self.matrix.shape[0])).astype('uint8')
             first_loop = False
-            self.matrix += (np.ones_like(self.matrix) - np.eye(self.matrix.shape[0])).astype('uint8')
 
     def initialize_matrix_change2(self):
         first_loop = True
