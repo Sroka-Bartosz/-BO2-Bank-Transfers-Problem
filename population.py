@@ -15,8 +15,11 @@ class Population(specimen.Specimen):
 
     def make_population(self, matrix):
         for i in range(self.size):
-            S = specimen.Specimen(matrix)
-            S.initialize_matrix_change()
+            if i == 0:
+                S = specimen.Specimen(matrix)
+            else:
+                S = specimen.Specimen(matrix)
+                S.initialize_matrix_change()
             self.specimens.append(S)
 
     def choose_specimen_to_mutation(self):
