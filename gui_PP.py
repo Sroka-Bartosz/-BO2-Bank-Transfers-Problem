@@ -113,6 +113,7 @@ def openNewWindow():
 
         def create_matrix():
             cre_matrix = Toplevel(window)
+            cre_matrix.iconbitmap('./cash_icon.ico')
             cre_matrix.title("Tworzenie własnej macierzy")
             matrix_size_x = int(size_1.get())
             matrix_size_y = int(size_2.get())
@@ -131,16 +132,18 @@ def openNewWindow():
                 global matrix_
                 matrix_ = np.zeros((matrix_size_x, matrix_size_y), dtype=np.int64)
                 values = []
-                for e in entry:
-                    values.append(e.get())
-                for i in range(matrix_size_x):
-                    for j in range(matrix_size_y):
-                        if i == j:
-                            matrix_[i][j] = 0
+                for e_next in entry:
+                    if type(e_next) is not str:
+                        values.append(e_next.get())
+                    else:
+                        values.append(e_next)
+                for i_x in range(matrix_size_x):
+                    for j_x in range(matrix_size_y):
+                        if i_x == j_x:
+                            matrix_[i_x][j_x] = 0
                         else:
-                            for value in values:
-                                x = int(value)
-                                matrix_[i][j] = x
+                            x = int(values[i_x*matrix_size_x + j_x])
+                            matrix_[i_x][j_x] = x
                 print(matrix_)
                 cols_m = np.sum(matrix_, axis=0)
                 rows_m = np.sum(matrix_, axis=1)
@@ -154,12 +157,12 @@ def openNewWindow():
             for i in range(matrix_size_x):
                 for j in range(matrix_size_y):
                     if i == j:
+                        entry.append("0")
                         Label(cre_matrix, text="0").grid(row=i, column=j, padx=2, pady=2)
                     else:
                         e = Entry(cre_matrix, width="10")
                         e.grid(row=i, column=j, padx=2, pady=2)
                         entry.append(e)
-
 
             b = Button(cre_matrix, text='Process', command=process)
             b.grid(row=(matrix_size_x + 1), column=(matrix_size_y-1) // 2 - 1, columnspan=3, sticky=E + W)
@@ -363,14 +366,14 @@ def start_algorithm():
         messagebox.showinfo("Warning", "Zła liczba iteracji. Max: 10000, Min:1")
         return
 
-    mut_size_x = int(E3_1.get())
-    mut_size_y = int(E3.get())
+    mut_size_x = int(E3.get())
+    mut_size_y = int(E3_1.get())
 
-    if mut_size_x > len(matrix_[0])//2 or mut_size_x < 1:
+    if mut_size_y > len(matrix_[0])//2 or mut_size_y < 1:
         messagebox.showinfo("Warning", "Zły rozmiar mutacji. Max: liczba wierszy/2, Min:1")
         return
 
-    if mut_size_y > len(matrix_[0])//2 or mut_size_y < 1:
+    if mut_size_x > len(matrix_[0])//2 or mut_size_x < 1:
         messagebox.showinfo("Warning", "Zły rozmiar mutacji. Max: liczba kolumn/2, Min:1")
         return
 
