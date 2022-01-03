@@ -134,7 +134,7 @@ def random_test_EA(size_of_specimen,
 
     # start Evolutionary Algorithm
     start = time.time()
-    best_Specimen = evolutionaryAlgorithm.EvolutionaryAlgorithm(primitive_specimen=problem_matrix,
+    best_Specimen, global_quality = evolutionaryAlgorithm.EvolutionaryAlgorithm(primitive_specimen=problem_matrix,
                                                                 size_of_population=size_of_population,
                                                                 iterations=iterations,
                                                                 time=time_,
@@ -199,7 +199,7 @@ if __name__ == "__main__":
 
     # start Evolutionary Algorithm
     start = time.time()
-    best_Specimen = evolutionaryAlgorithm.EvolutionaryAlgorithm(primitive_specimen=problem_matrix,
+    best_Specimen, global_quality = evolutionaryAlgorithm.EvolutionaryAlgorithm(primitive_specimen=problem_matrix,
                                                                 size_of_population=20,
                                                                 iterations=100,
                                                                 # time=,

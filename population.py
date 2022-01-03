@@ -12,6 +12,7 @@ class Population(specimen.Specimen):
         self.elite = []
         self.size = size
         self.best_quality = 0
+        self.global_quality = []
 
     def make_population(self, matrix):
         for i in range(self.size):
@@ -266,4 +267,5 @@ class Population(specimen.Specimen):
     def display_quality_changes(self, it):
         best_quality_in_population = self.best_specimen().quality()
         if self.best_quality < best_quality_in_population:
+            self.global_quality.append([it, best_quality_in_population])
             print("iteration {0} - quality:\t".format(it), best_quality_in_population)
