@@ -1,9 +1,64 @@
+import copy
 import random
 
 import numpy as np
-import copy
+
 import functions
 import specimen
+
+
+def elementary_crossover(parent1_, parent2_):
+    parent1 = parent1_.matrix
+    parent2 = parent2_.matrix
+    DIV = (parent1 + parent2) // 2
+    REM = (parent1 + parent2) % 2
+
+    REM1, REM2 = functions.ones(REM)
+    if REM1 + REM2 is not REM:
+        child1 = parent1_
+        child2 = parent2_
+    else:
+        child1 = specimen.Specimen(DIV + REM1)
+        child2 = specimen.Specimen(DIV + REM2)
+    return child1, child2
+
+
+def elementary_mutation(mutate_specimen, rows_number, cols_number):
+    rows = random.sample([i for i in range(mutate_specimen.size)], k=rows_number)
+    cols = random.sample([i for i in range(mutate_specimen.size) if i not in rows], k=cols_number)
+
+    mutate_specimen = mutate_specimen.matrix
+
+    temp_matrix_rows = []
+    temp_matrix = []
+    sum_rows = []
+    sum_row = 0
+    sum_cols = []
+    sum_col = 0
+    for i in rows:
+        for j in cols:
+            temp_matrix_rows.append(mutate_specimen[j][i])
+            sum_row += mutate_specimen[j][i]
+        temp_matrix.append(temp_matrix_rows)
+        temp_matrix_rows = []
+        sum_rows.append(sum_row)
+        sum_row = 0
+
+    for i in cols:
+        for j in rows:
+            sum_col += mutate_specimen[i][j]
+        sum_cols.append(sum_col)
+        sum_col = 0
+
+    temp_matrix = functions.change_matrix(temp_matrix, sum_cols, sum_rows)
+    a, b = 0, 0
+    for i in rows:
+        for j in cols:
+            mutate_specimen[j][i] = temp_matrix[a][b]
+            b += 1
+        a += 1
+        b = 0
+    return mutate_specimen
 
 
 class Population(specimen.Specimen):
@@ -29,71 +84,23 @@ class Population(specimen.Specimen):
         self.specimens.remove(random_specimen)
         return random_specimen
 
-    def elementary_mutation(self, mutate_specimen, rows_number, cols_number):
-        rows = random.sample([i for i in range(mutate_specimen.size)], k=rows_number)
-        cols = random.sample([i for i in range(mutate_specimen.size) if i not in rows], k=cols_number)
-
-        mutate_specimen = mutate_specimen.matrix
-
-        temp_matrix_rows = []
-        temp_matrix = []
-        sum_rows = []
-        sum_row = 0
-        sum_cols = []
-        sum_col = 0
-        for i in rows:
-            for j in cols:
-                temp_matrix_rows.append(mutate_specimen[j][i])
-                sum_row += mutate_specimen[j][i]
-            temp_matrix.append(temp_matrix_rows)
-            temp_matrix_rows = []
-            sum_rows.append(sum_row)
-            sum_row = 0
-
-        for i in cols:
-            for j in rows:
-                sum_col += mutate_specimen[i][j]
-            sum_cols.append(sum_col)
-            sum_col = 0
-
-        temp_matrix = functions.change_matrix(temp_matrix, sum_cols, sum_rows)
-        a, b = 0, 0
-        for i in rows:
-            for j in cols:
-                mutate_specimen[j][i] = temp_matrix[a][b]
-                b += 1
-            a += 1
-            b = 0
-        return mutate_specimen
-
     def mutation(self, rows_number=2, cols_number=2):
         random_specimen = self.choose_specimen_to_mutation()
-        mutate_specimen = self.elementary_mutation(random_specimen, rows_number=rows_number, cols_number=cols_number)
+        mutate_specimen = elementary_mutation(random_specimen, rows_number=rows_number, cols_number=cols_number)
         self.specimens.append(specimen.Specimen(mutate_specimen))
 
-    def crossover(self):
+    def choose_parent_to_crossover(self):
         parent1_ = random.choice(self.specimens)
         self.specimens.remove(parent1_)
-
         parent2_ = random.choice(self.specimens)
         self.specimens.remove(parent2_)
+        return parent1_, parent2_
 
-        parent1 = parent1_.matrix
-        parent2 = parent2_.matrix
-        DIV = (parent1 + parent2) // 2
-        REM = (parent1 + parent2) % 2
-
-        REM1, REM2 = functions.ones(REM)
-        if REM1+REM2 is not REM:
-            child1 = parent1_
-            child2 = parent2_
-        else:
-            child1 = specimen.Specimen(DIV + REM1)
-            child2 = specimen.Specimen(DIV + REM2)
-
-        self.specimens.append(child1)
-        self.specimens.append(child2)
-        return parent1_, parent2_, child1, child2
+    def crossover(self):
+        crossover_parent1, crossover_parent2 = self.choose_parent_to_crossover()
+        crossover_child1, crossover_child2 = elementary_crossover(crossover_parent1, crossover_parent2)
+        self.specimens.append(crossover_child1)
+        self.specimens.append(crossover_child2)
 
     def selection(self, selection_type):
         if not isinstance(selection_type, str):
