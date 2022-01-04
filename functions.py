@@ -221,3 +221,13 @@ def reshape_initial_problem(matrix):
     elif size_ < 0:
         matrix = np.pad(matrix, [(0, 0), (0, -size_)])
     return matrix
+
+
+def delete_unexpected_rows_cols(matrix):
+    rows = np.sum(matrix, axis=1)
+    cols = np.sum(matrix, axis=0)
+
+    rows_to_delete = [i for i in range(len(rows)) if rows[i] == 0]
+    cols_to_delete = [j for j in range(len(cols)) if cols[j] == 0]
+
+    return np.delete(np.delete(matrix, rows_to_delete, 0), cols_to_delete, 1)
