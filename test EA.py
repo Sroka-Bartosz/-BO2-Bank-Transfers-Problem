@@ -132,15 +132,15 @@ def RUN_EA(problem_matrix,
 
     # start Evolutionary Algorithm
     start = time.time()
-    best_Specimen = evolutionaryAlgorithm.EvolutionaryAlgorithm(primitive_specimen=problem_matrix,
-                                                                size_of_population=size_of_population,
-                                                                iterations=iterations,
-                                                                time=time_,
-                                                                size_of_elite=size_of_elite,
-                                                                number_of_mutations=number_of_mutations,
-                                                                size_of_mutation=size_of_mutation,
-                                                                number_of_crossover=number_of_crossover,
-                                                                selection_type=selection_type)
+    best_Specimen, global_quality = evolutionaryAlgorithm.EvolutionaryAlgorithm(primitive_specimen=problem_matrix,
+                                                                                size_of_population=size_of_population,
+                                                                                iterations=iterations,
+                                                                                time=time_,
+                                                                                size_of_elite=size_of_elite,
+                                                                                number_of_mutations=number_of_mutations,
+                                                                                size_of_mutation=size_of_mutation,
+                                                                                number_of_crossover=number_of_crossover,
+                                                                                selection_type=selection_type)
 
     print("\nTime:    ", time.time() - start)
 

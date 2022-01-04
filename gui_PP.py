@@ -6,10 +6,11 @@ from tkinter import filedialog, messagebox
 from tkinter import ttk
 from tkinter import *
 from tkinter.ttk import *
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 import evolutionaryAlgorithm
 import time
-import specimen
 import numpy as np
 
 # global variables
@@ -50,7 +51,7 @@ lf.pack(padx=10, pady=20)
 
 # Create a class to print matrix
 class Table:
-    def __init__(self, root, matrix, cols, rows, total_rows, total_columns):
+    def __init__(self, root, matrix, cols, rows, total_rows, total_columns, program_time=None):
 
         canvas = tk.Canvas(root)
         scrollable_frame = ttk.Frame(canvas)
@@ -63,19 +64,29 @@ class Table:
         )
 
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        # code for creating table
+
         for i in range(total_rows):
             for j in range(total_columns):
-                self.e = tk.Label(scrollable_frame, width=4, text=str(matrix[i][j]))
+                self.e = tk.Label(scrollable_frame, width=5, text=str(matrix[i][j]))
                 self.e.grid(row=i, column=j, sticky='ns')
 
-            la = tk.Label(scrollable_frame, width=4, bg="gray51", text=str(rows[i]))
+            la = tk.Label(scrollable_frame, width=5, bg="gray51", text=str(rows[i]))
             la.grid(row=i, column=total_columns+1, sticky='ns')
 
         for x in range(total_columns):
-            la1 = tk.Label(scrollable_frame, width=4, bg="gray51", text=str(cols[x]))
+            la1 = tk.Label(scrollable_frame, width=5, bg="gray51", text=str(cols[x]))
             la1.config(bg="gray")
             la1.grid(row=total_rows+1, column=x, sticky='ns')
+
+        if program_time:
+            dis_time = tk.Label(root, text="Czas wykonania programu: " + str(program_time))
+            dis_time.config(font=("Courier", 10))
+            dis_time.pack(padx=10, pady=10, side=BOTTOM)
+
+        quality_temp = total_rows*total_columns - np.count_nonzero(matrix == 0)
+        dis_quality = tk.Label(root, text="Wartość funkcji celu: " + str(quality_temp))
+        dis_quality.config(font=("Courier", 10))
+        dis_quality.pack(padx=10, pady=10, side=BOTTOM)
 
         scroll = Scrollbar(root, orient="vertical", command=canvas.yview)
         scroll2 = Scrollbar(root, orient="horizontal", command=canvas.xview)
@@ -118,13 +129,13 @@ def openNewWindow():
             matrix_size_x = int(size_1.get())
             matrix_size_y = int(size_2.get())
 
-            if matrix_size_x > 500 or matrix_size_x < 3:
-                messagebox.showwarning("Warning", "Zła wartość")
+            if matrix_size_x > 300 or matrix_size_x < 3:
+                messagebox.showwarning("Warning", "Zły rozmiar macierzy. Max: 300, Min: 3 ")
                 cre_matrix.destroy()
                 return
 
-            if matrix_size_y > 500 or matrix_size_y < 3:
-                messagebox.showwarning("Warning", 'Zła wartość')
+            if matrix_size_y > 300 or matrix_size_y < 3:
+                messagebox.showwarning("Warning", "Zły rozmiar macierzy. Max: 300, Min: 3 ")
                 cre_matrix.destroy()
                 return
 
@@ -144,7 +155,7 @@ def openNewWindow():
                         else:
                             x = int(values[i_x*matrix_size_x + j_x])
                             matrix_[i_x][j_x] = x
-                print(matrix_)
+
                 cols_m = np.sum(matrix_, axis=0)
                 rows_m = np.sum(matrix_, axis=1)
                 Table(container1, matrix_, cols_m, rows_m, len(matrix_), len(matrix_[0]))
@@ -196,7 +207,6 @@ def openNewWindow():
             matrix_ = np.array(matrix_)
             cols_m = np.sum(matrix_, axis=0)
             rows_m = np.sum(matrix_, axis=1)
-            print(matrix_)
             Table(container1, matrix_, cols_m, rows_m, len(matrix_), len(matrix_[0]))
 
             second_button.destroy()
@@ -232,21 +242,19 @@ def openNewWindow():
             size_of_specimen = int(E2_m.get())
 
             if max_generated_value > max_value_of_spec or max_generated_value < min_value_of_spec:
-                messagebox.showinfo("Warning", "Zła wartość")
+                messagebox.showinfo("Warning", "Zła wartość. Max: 500, Min: 1")
                 return
             if size_of_specimen > max_size_of_spec or size_of_specimen < min_size_of_spec:
-                messagebox.showwarning("Warning", 'Zła wartość')
+                messagebox.showwarning("Warning", 'Zły rozmiar. Max: 30, Min: 3')
                 return
 
             matrix_ = np.random.randint(low=0, high=max_generated_value, size=(size_of_specimen, size_of_specimen))
             np.fill_diagonal(matrix_, 0)
 
-            S = specimen.Specimen(matrix_)
-            print(matrix_)
             cols_m = np.sum(matrix_, axis=0)
             rows_m = np.sum(matrix_, axis=1)
             Table(container1, matrix_, cols_m, rows_m, len(matrix_), len(matrix_[0]))
-            print("quality: ", S.quality(), "\n")
+
             third_button.destroy()
             newWindow.destroy()
 
@@ -331,11 +339,33 @@ def sel():
 
 grid_column = 0
 for method in selections:
-    # create a radio button
     radio = ttk.Radiobutton(lf1, text=method, value=grid_column+1, variable=selected_method, command=sel)
     radio.grid(column=grid_column, row=0, ipadx=10, ipady=10)
-    # grid column
+
     grid_column += 1
+
+def plot_quality(plot_quality, matrix_size):
+    iteration_ = int(itera_entry.get())
+    figure1 = plt.Figure(figsize=(6, 5))
+    a = figure1.add_subplot(111)
+    size_ = matrix_size[0] * matrix_size[1]
+    x_axis = [0]
+    y_axis = [size_]
+    for quali in plot_quality:
+        x_axis.append(quali[0])
+        y_axis.append(size_ - quali[1])
+    x_axis.append(iteration_)
+    y_axis.append(size_ - plot_quality[-1][1])
+
+    a.step(x_axis, y_axis)
+    a.set_ylabel("Jakość najlepszego rozwiązania")
+    a.set_xlabel("Numer iteracji")
+    a.set_title("")
+    a.grid()
+    line1 = FigureCanvasTkAgg(figure1, frame3)
+    line1.get_tk_widget().pack()
+    line1.draw()
+
 
 def start_algorithm():
     global matrix_
@@ -380,7 +410,7 @@ def start_algorithm():
     size_of_mutation_ = [mut_size_x, mut_size_y]
 
     start = time.time()
-    best_Specimen = evolutionaryAlgorithm.EvolutionaryAlgorithm(primitive_specimen=matrix_,
+    best_Specimen, quality_ = evolutionaryAlgorithm.EvolutionaryAlgorithm(primitive_specimen=matrix_,
                                                                 size_of_population=size_population_,
                                                                 iterations=iteration_,
                                                                 # time=,
@@ -390,16 +420,14 @@ def start_algorithm():
                                                                 number_of_crossover=number_crossover_,
                                                                 selection_type=selection_)
 
-    print("\nTime:    ", time.time() - start)
+    time_count = time.time() - start
 
     best_Specimen_cols = np.sum(best_Specimen.matrix, axis=0)
     best_Specimen_rows = np.sum(best_Specimen.matrix, axis=1)
 
-    Table(container2, best_Specimen.matrix, best_Specimen_cols, best_Specimen_rows, len(best_Specimen.matrix), len(best_Specimen.matrix[0]))
+    Table(container2, best_Specimen.matrix, best_Specimen_cols, best_Specimen_rows, len(best_Specimen.matrix), len(best_Specimen.matrix[0]), time_count)
 
-    # best_Specimen_cols = np.sum(best_Specimen.matrix, axis=0)
-    # best_Specimen_rows = np.sum(best_Specimen.matrix, axis=1)
-
+    plot_quality(quality_, best_Specimen.matrix.shape)
     # print("Valid:   ", (best_Specimen_cols == cols_).all() and (best_Specimen_rows == rows_).all())
     print("The best Specimen:")
     best_Specimen.display()

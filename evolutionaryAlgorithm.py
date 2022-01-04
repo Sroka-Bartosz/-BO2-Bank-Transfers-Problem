@@ -56,4 +56,4 @@ def EvolutionaryAlgorithm(
             break
         i += 1
 
-    return best_specimen_
+    return best_specimen_, population_.global_quality
