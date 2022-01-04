@@ -202,7 +202,7 @@ def ones(Z, case=1):
 
 
 def initialize_primitive_specimen(size_of_specimen, max_generated_value):
-    problem_matrix = np.random.randint(low=0, high=max_generated_value, size=(size_of_specimeng, size_of_specimen))
+    problem_matrix = np.random.randint(low=0, high=max_generated_value, size=(size_of_specimen, size_of_specimen))
     np.fill_diagonal(problem_matrix, 0)
     return problem_matrix
 
