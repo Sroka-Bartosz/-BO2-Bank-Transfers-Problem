@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 import evolutionaryAlgorithm
+import functions
 import time
 import numpy as np
 
@@ -18,7 +19,7 @@ matrix_ = None
 selection_ = 'roulette'
 
 max_size_of_spec = 30
-min_size_of_spec = 3
+min_size_of_spec = 4
 max_value_of_spec = 500
 min_value_of_spec = 1
 
@@ -49,6 +50,7 @@ notebook.add(frame3, text='Przebieg algorytmu')
 lf = ttk.LabelFrame(window, text='Właściwości')
 lf.pack(padx=10, pady=20)
 
+
 # Create a class to print matrix
 class Table:
     def __init__(self, root, matrix, cols, rows, total_rows, total_columns, program_time=None):
@@ -71,19 +73,19 @@ class Table:
                 self.e.grid(row=i, column=j, sticky='ns')
 
             la = tk.Label(scrollable_frame, width=5, bg="gray51", text=str(rows[i]))
-            la.grid(row=i, column=total_columns+1, sticky='ns')
+            la.grid(row=i, column=total_columns + 1, sticky='ns')
 
         for x in range(total_columns):
             la1 = tk.Label(scrollable_frame, width=5, bg="gray51", text=str(cols[x]))
             la1.config(bg="gray")
-            la1.grid(row=total_rows+1, column=x, sticky='ns')
+            la1.grid(row=total_rows + 1, column=x, sticky='ns')
 
         if program_time:
             dis_time = tk.Label(root, text="Czas wykonania programu: " + str(program_time))
             dis_time.config(font=("Courier", 10))
             dis_time.pack(padx=10, pady=10, side=BOTTOM)
 
-        quality_temp = total_rows*total_columns - np.count_nonzero(matrix == 0)
+        quality_temp = total_rows * total_columns - np.count_nonzero(matrix == 0)
         dis_quality = tk.Label(root, text="Wartość funkcji celu: " + str(quality_temp))
         dis_quality.config(font=("Courier", 10))
         dis_quality.pack(padx=10, pady=10, side=BOTTOM)
@@ -96,8 +98,11 @@ class Table:
         scroll2.pack(fill='x', side=BOTTOM)
         canvas.pack(side=LEFT, expand=True, fill='both')
 
+
 # function to create new window
 def openNewWindow():
+    for widgets in container1.winfo_children():
+        widgets.destroy()
     newWindow = Toplevel(window)
     newWindow.title("Inicjalizacja macierzy")
     newWindow.geometry("500x500")
@@ -112,14 +117,18 @@ def openNewWindow():
         first_button.geometry("300x300")
         first_button.iconbitmap('./cash_icon.ico')
         Label(first_button, text="Podaj rozmiar macierzy").pack(padx=10, pady=5)
-        size_x = Label(first_button, text="Liczba wierszy: ")
-        size_x.pack(padx=10, pady=5, fill='x')
-        size_1 = Entry(first_button)
+        temp_frame_1 = Frame(first_button)
+        temp_frame_1.pack(padx=10, pady=10, fill='x')
+        size_x_m = Label(temp_frame_1, text="Liczba wierszy: ")
+        size_x_m.pack(padx=10, pady=5, fill='x', side=LEFT)
+        size_1 = Entry(temp_frame_1)
         size_1.pack(padx=10, pady=5, fill='x')
 
-        size_y = Label(first_button, text="Liczba kolumn: ")
-        size_y.pack(padx=10, pady=5, fill='x')
-        size_2 = Entry(first_button)
+        temp_frame_2 = Frame(first_button)
+        temp_frame_2.pack(padx=10, pady=10, fill='x')
+        size_y_m = Label(temp_frame_2, text="Liczba kolumn: ")
+        size_y_m.pack(padx=10, pady=5, fill='x', side=LEFT)
+        size_2 = Entry(temp_frame_2)
         size_2.pack(padx=10, pady=5, fill='x')
 
         def create_matrix():
@@ -129,12 +138,12 @@ def openNewWindow():
             matrix_size_x = int(size_1.get())
             matrix_size_y = int(size_2.get())
 
-            if matrix_size_x > 300 or matrix_size_x < 3:
+            if matrix_size_x > 300 or matrix_size_x < 4:
                 messagebox.showwarning("Warning", "Zły rozmiar macierzy. Max: 300, Min: 3 ")
                 cre_matrix.destroy()
                 return
 
-            if matrix_size_y > 300 or matrix_size_y < 3:
+            if matrix_size_y > 300 or matrix_size_y < 4:
                 messagebox.showwarning("Warning", "Zły rozmiar macierzy. Max: 300, Min: 3 ")
                 cre_matrix.destroy()
                 return
@@ -153,7 +162,7 @@ def openNewWindow():
                         if i_x == j_x:
                             matrix_[i_x][j_x] = 0
                         else:
-                            x = int(values[i_x*matrix_size_x + j_x])
+                            x = int(values[i_x * matrix_size_y + j_x])
                             matrix_[i_x][j_x] = x
 
                 cols_m = np.sum(matrix_, axis=0)
@@ -176,14 +185,12 @@ def openNewWindow():
                         entry.append(e)
 
             b = Button(cre_matrix, text='Process', command=process)
-            b.grid(row=(matrix_size_x + 1), column=(matrix_size_y-1) // 2 - 1, columnspan=3, sticky=E + W)
-
+            b.grid(row=(matrix_size_x + 1), column=(matrix_size_y - 1) // 2 - 1, columnspan=3, sticky=E + W)
 
         start_button_1 = Button(first_button, text="Start", command=create_matrix)
         exit_button_1 = Button(first_button, text="Exit", command=lambda: first_button.destroy())
         start_button_1.pack(padx=40, side=LEFT)
         exit_button_1.pack(padx=40, side=RIGHT)
-
 
     # second button to enter matrix from file
     def NewWindowButton2():
@@ -227,19 +234,24 @@ def openNewWindow():
 
         lab_3 = Label(third_button, text="Podaj właściowości macierzy")
         lab_3.pack(padx=10, pady=5)
+        L2_m = Label(third_button, text="Rozmiar osobnika: ")
+        L2_m.pack(padx=5, pady=5, fill='x')
+        E2_m = Entry(third_button)
+        E2_m.pack(padx=5, pady=5, fill='x')
         L1_m = Label(third_button, text="Maksymalna wartość: ")
         L1_m.pack(padx=5, pady=5, fill='x')
         E1_m = Entry(third_button)
         E1_m.pack(padx=5, pady=5, fill='x')
-        L2_m = Label(third_button, text="Rozmiar osobnika")
-        L2_m.pack(padx=5, pady=5, fill='x')
-        E2_m = Entry(third_button)
-        E2_m.pack(padx=5, pady=5, fill='x')
+        L3_m = Label(third_button, text="Gęstości macierzy: ")
+        L3_m.pack(padx=5, pady=5, fill='x')
+        E3_m = Entry(third_button)
+        E3_m.pack(padx=5, pady=5, fill='x')
 
         def generate_matrix():
             global matrix_
             max_generated_value = int(E1_m.get())
             size_of_specimen = int(E2_m.get())
+            density = int(E3_m.get())
 
             if max_generated_value > max_value_of_spec or max_generated_value < min_value_of_spec:
                 messagebox.showinfo("Warning", "Zła wartość. Max: 500, Min: 1")
@@ -247,9 +259,11 @@ def openNewWindow():
             if size_of_specimen > max_size_of_spec or size_of_specimen < min_size_of_spec:
                 messagebox.showwarning("Warning", 'Zły rozmiar. Max: 30, Min: 3')
                 return
+            if density > 100 or density < 10:
+                messagebox.showwarning("Warning", 'Zły wartość. Max: 100, Min: 10')
+                return
 
-            matrix_ = np.random.randint(low=0, high=max_generated_value, size=(size_of_specimen, size_of_specimen))
-            np.fill_diagonal(matrix_, 0)
+            matrix_ = functions.generate_initial_matrix(max_generated_value, size_of_specimen, density)
 
             cols_m = np.sum(matrix_, axis=0)
             rows_m = np.sum(matrix_, axis=1)
@@ -299,31 +313,45 @@ E2 = Entry(value_frame)
 E2.pack(fill='x', expand=True)
 L3 = Label(value_frame, text="Rozmiar mutacji")
 L3.pack(fill='x', expand=True)
-
-size_x = Label(value_frame, text="Liczba wierszy: ")
-size_x.pack(fill='x', expand=True)
-E3_1 = Entry(value_frame)
-E3_1.pack(fill='x', expand=True)
-
-size_y = Label(value_frame, text="Liczba kolumn: ")
-size_y.pack(fill='x', expand=True)
-E3 = Entry(value_frame)
-E3.pack(fill='x', expand=True)
+temp_frame_mu = Frame(value_frame)
+temp_frame_mu.pack(fill='x')
+E3_1 = Entry(temp_frame_mu, width=10)
+E3_1.pack(fill='x', side=LEFT, expand=True)
+lab_x = Label(temp_frame_mu, text='x')
+lab_x.pack(padx=10, side=LEFT)
+E3 = Entry(temp_frame_mu, width=10)
+E3.pack(fill='x', side=LEFT, expand=True)
 
 L4 = Label(value_frame, text="Liczba mutacji")
 L4.pack(fill='x', expand=True)
 E4 = Entry(value_frame)
 E4.pack(fill='x', expand=True)
 
+
+def is_checked():
+    if CheckVar1.get() == 1:
+        elite_si.config(state='normal')
+    elif CheckVar1.get() == 0:
+        elite_si.config(state='disabled')
+    else:
+        messagebox.showerror('PythonGuides', 'Something went wrong!')
+
+
 CheckVar1 = IntVar()
-C1 = Checkbutton(lf2, text="Elita", variable=CheckVar1, onvalue=1, offvalue=0)
+C1 = Checkbutton(lf2, text="Elita", variable=CheckVar1, onvalue=1, offvalue=0, command=is_checked)
 C1.pack(padx=10, pady=5, fill='x', expand=True)
+elite_si = Entry(lf2)
+elite_si.config(state='disabled')
+elite_si_lab = Label(lf2, text="Rozmiar elity: ")
+elite_si_lab.pack(side=LEFT)
+elite_si.pack(padx=10, pady=5, side=BOTTOM)
 
 lf1 = ttk.LabelFrame(lf, text='Metoda selekcji')
 lf1.pack(padx=10)
 
 selected_method = tk.IntVar()
 selections = ('roulette', 'ranking', 'tournament')
+
 
 def sel():
     global selection_
@@ -337,25 +365,27 @@ def sel():
     else:
         selection_ = 'roulette'
 
+
 grid_column = 0
 for method in selections:
-    radio = ttk.Radiobutton(lf1, text=method, value=grid_column+1, variable=selected_method, command=sel)
+    radio = ttk.Radiobutton(lf1, text=method, value=grid_column + 1, variable=selected_method, command=sel)
     radio.grid(column=grid_column, row=0, ipadx=10, ipady=10)
 
     grid_column += 1
 
-def plot_quality(plot_quality, matrix_size):
+
+def plot_quality(plot_quality_, matrix_size):
     iteration_ = int(itera_entry.get())
     figure1 = plt.Figure(figsize=(6, 5))
     a = figure1.add_subplot(111)
     size_ = matrix_size[0] * matrix_size[1]
     x_axis = [0]
     y_axis = [size_]
-    for quali in plot_quality:
+    for quali in plot_quality_:
         x_axis.append(quali[0])
         y_axis.append(size_ - quali[1])
     x_axis.append(iteration_)
-    y_axis.append(size_ - plot_quality[-1][1])
+    y_axis.append(size_ - plot_quality_[-1][1])
 
     a.step(x_axis, y_axis)
     a.set_ylabel("Jakość najlepszego rozwiązania")
@@ -367,29 +397,38 @@ def plot_quality(plot_quality, matrix_size):
     line1.draw()
 
 
-def start_algorithm():
-    global matrix_
-    elite_ = None
+def clear_frame():
+    for widgets in frame3.winfo_children():
+        widgets.destroy()
+    for widgets in container2.winfo_children():
+        widgets.destroy()
 
+
+def start_algorithm():
+    clear_frame()
+    global matrix_
+    size_of_elite = 0
     size_population_ = int(E1.get())
+    matrix_ = functions.reshape_initial_problem(matrix_)
+
     if size_population_ > 50 or size_population_ < 1:
         messagebox.showinfo("Warning", "Zły rozmiar populacji. Max:50, Min:1")
         return
 
     number_mutation_ = int(E4.get())
-    if number_mutation_ > 50 or number_mutation_ < 1:
+    if number_mutation_ > 50 or number_mutation_ < 0:
         messagebox.showinfo("Warning", "Zła liczba mutacji. Max: 50, Min:1")
         return
 
     number_crossover_ = int(E2.get())
-    if number_crossover_ > 50 or number_crossover_ < 1:
+    if number_crossover_ > 50 or number_crossover_ < 0:
         messagebox.showinfo("Warning", "Zła liczba krzyżowania. Max: 50, Min:1")
         return
 
-    if C1 == 1:
-        elite_ = True
+    if CheckVar1.get() == 1:
+        size_of_elite = elite_si.get()
     else:
-        elite_ = False
+        size_of_elite = 0
 
     iteration_ = int(itera_entry.get())
     if iteration_ > 10000 or iteration_ < 1:
@@ -399,11 +438,11 @@ def start_algorithm():
     mut_size_x = int(E3.get())
     mut_size_y = int(E3_1.get())
 
-    if mut_size_y > len(matrix_[0])//2 or mut_size_y < 1:
+    if mut_size_y > len(matrix_[0]) // 2 or mut_size_y < 2:
         messagebox.showinfo("Warning", "Zły rozmiar mutacji. Max: liczba wierszy/2, Min:1")
         return
 
-    if mut_size_x > len(matrix_[0])//2 or mut_size_x < 1:
+    if mut_size_x > len(matrix_[0]) // 2 or mut_size_x < 2:
         messagebox.showinfo("Warning", "Zły rozmiar mutacji. Max: liczba kolumn/2, Min:1")
         return
 
@@ -411,21 +450,23 @@ def start_algorithm():
 
     start = time.time()
     best_Specimen, quality_ = evolutionaryAlgorithm.EvolutionaryAlgorithm(primitive_specimen=matrix_,
-                                                                size_of_population=size_population_,
-                                                                iterations=iteration_,
-                                                                # time=,
-                                                                # size_of_elite=,
-                                                                number_of_mutations=number_mutation_,
-                                                                size_of_mutation=size_of_mutation_,
-                                                                number_of_crossover=number_crossover_,
-                                                                selection_type=selection_)
+                                                                          size_of_population=size_population_,
+                                                                          iterations=iteration_,
+                                                                          # time=,
+                                                                          size_of_elite=size_of_elite,
+                                                                          number_of_mutations=number_mutation_,
+                                                                          size_of_mutation=size_of_mutation_,
+                                                                          number_of_crossover=number_crossover_,
+                                                                          selection_type=selection_)
 
     time_count = time.time() - start
 
     best_Specimen_cols = np.sum(best_Specimen.matrix, axis=0)
     best_Specimen_rows = np.sum(best_Specimen.matrix, axis=1)
 
-    Table(container2, best_Specimen.matrix, best_Specimen_cols, best_Specimen_rows, len(best_Specimen.matrix), len(best_Specimen.matrix[0]), time_count)
+    best_Specimen.matrix = functions.delete_unexpected_rows_cols(best_Specimen.matrix)
+    Table(container2, best_Specimen.matrix, best_Specimen_cols, best_Specimen_rows, len(best_Specimen.matrix),
+          len(best_Specimen.matrix[0]), time_count)
 
     plot_quality(quality_, best_Specimen.matrix.shape)
     # print("Valid:   ", (best_Specimen_cols == cols_).all() and (best_Specimen_rows == rows_).all())
@@ -435,6 +476,5 @@ def start_algorithm():
 
 start_button = Button(lf, text="Start", command=start_algorithm)
 start_button.pack(padx=10, pady=10, expand=True)
-
 
 window.mainloop()
