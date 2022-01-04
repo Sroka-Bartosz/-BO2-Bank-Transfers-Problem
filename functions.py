@@ -211,3 +211,13 @@ def generate_initial_matrix(max_generated_value, size_of_matrix, density_coeffic
     dense_matrix = np.random.randint(low=0, high=max_generated_value, size=(size_of_matrix, size_of_matrix))
     np.fill_diagonal(dense_matrix, 0)
     return dense_matrix - dense_matrix * (dense_matrix > (density_coefficient / 100 * max_generated_value))
+
+
+def reshape_initial_problem(matrix):
+    number_of_rows, number_of_cols = matrix.shape
+    size_ = number_of_cols - number_of_rows
+    if size_ > 0:
+        matrix = np.pad(matrix, [(0, size_), (0, 0)])
+    elif size_ < 0:
+        matrix = np.pad(matrix, [(0, 0), (0, -size_)])
+    return matrix
