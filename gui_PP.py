@@ -1,11 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tkinter as tk
-from tkinter import filedialog, messagebox
-from tkinter import ttk
 from tkinter import *
 from tkinter.ttk import *
+import tkinter as tk
+from tkinter import filedialog, messagebox, ttk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
@@ -27,7 +26,7 @@ min_value_of_spec = 1
 window = tk.Tk()
 window.title('Problem przelewowy')
 window.geometry('1000x600')
-window.resizable(False, False)
+# window.resizable(False, False)
 window.iconbitmap('./cash_icon.ico')
 
 # create a notebook
@@ -139,12 +138,12 @@ def openNewWindow():
             matrix_size_y = int(size_2.get())
 
             if matrix_size_x > 300 or matrix_size_x < 4:
-                messagebox.showwarning("Warning", "Zły rozmiar macierzy. Max: 300, Min: 3 ")
+                messagebox.showwarning("Warning", "Zły rozmiar macierzy. Max: 300, Min: 4 ")
                 cre_matrix.destroy()
                 return
 
             if matrix_size_y > 300 or matrix_size_y < 4:
-                messagebox.showwarning("Warning", "Zły rozmiar macierzy. Max: 300, Min: 3 ")
+                messagebox.showwarning("Warning", "Zły rozmiar macierzy. Max: 300, Min: 4 ")
                 cre_matrix.destroy()
                 return
 
@@ -257,7 +256,7 @@ def openNewWindow():
                 messagebox.showinfo("Warning", "Zła wartość. Max: 500, Min: 1")
                 return
             if size_of_specimen > max_size_of_spec or size_of_specimen < min_size_of_spec:
-                messagebox.showwarning("Warning", 'Zły rozmiar. Max: 30, Min: 3')
+                messagebox.showwarning("Warning", 'Zły rozmiar. Max: 30, Min: 4')
                 return
             if density > 100 or density < 10:
                 messagebox.showwarning("Warning", 'Zły wartość. Max: 100, Min: 10')
@@ -378,7 +377,7 @@ def plot_quality(plot_quality_, matrix_size):
     iteration_ = int(itera_entry.get())
     figure1 = plt.Figure(figsize=(6, 5))
     a = figure1.add_subplot(111)
-    size_ = matrix_size[0] * matrix_size[1]
+    size_ = max(matrix_size[0] * matrix_size[1])**2
     x_axis = [0]
     y_axis = [size_]
     for quali in plot_quality_:
@@ -417,16 +416,16 @@ def start_algorithm():
 
     number_mutation_ = int(E4.get())
     if number_mutation_ > 50 or number_mutation_ < 0:
-        messagebox.showinfo("Warning", "Zła liczba mutacji. Max: 50, Min:1")
+        messagebox.showinfo("Warning", "Zła liczba mutacji. Max: 50, Min:0")
         return
 
     number_crossover_ = int(E2.get())
     if number_crossover_ > 50 or number_crossover_ < 0:
-        messagebox.showinfo("Warning", "Zła liczba krzyżowania. Max: 50, Min:1")
+        messagebox.showinfo("Warning", "Zła liczba krzyżowania. Max: 50, Min:0")
         return
 
     if CheckVar1.get() == 1:
-        size_of_elite = elite_si.get()
+        size_of_elite = int(elite_si.get())
     else:
         size_of_elite = 0
 
@@ -439,11 +438,11 @@ def start_algorithm():
     mut_size_y = int(E3_1.get())
 
     if mut_size_y > len(matrix_[0]) // 2 or mut_size_y < 2:
-        messagebox.showinfo("Warning", "Zły rozmiar mutacji. Max: liczba wierszy/2, Min:1")
+        messagebox.showinfo("Warning", "Zły rozmiar mutacji. Max: liczba wierszy/2, Min:2")
         return
 
     if mut_size_x > len(matrix_[0]) // 2 or mut_size_x < 2:
-        messagebox.showinfo("Warning", "Zły rozmiar mutacji. Max: liczba kolumn/2, Min:1")
+        messagebox.showinfo("Warning", "Zły rozmiar mutacji. Max: liczba kolumn/2, Min:2")
         return
 
     size_of_mutation_ = [mut_size_x, mut_size_y]
@@ -473,8 +472,13 @@ def start_algorithm():
     print("The best Specimen:")
     best_Specimen.display()
 
+def step():
+    iteration_ = int(itera_entry.get())
+    pb1['value'] += 285/iteration_
+
 
 start_button = Button(lf, text="Start", command=start_algorithm)
 start_button.pack(padx=10, pady=10, expand=True)
-
+pb1 = Progressbar(window, orient=HORIZONTAL, length=285, mode='indeterminate')
+pb1.pack()
 window.mainloop()
