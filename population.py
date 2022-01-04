@@ -106,6 +106,8 @@ class Population(specimen.Specimen):
     def selection(self, selection_type):
         if not isinstance(selection_type, str):
             raise Exception('ERROR: incorrect type of selection_type want str, got {0}'.format(type(selection_type)))
+        self.specimens = [s for s in self.specimens if s not in self.elite]
+        self.size = self.size - len(self.elite)
         if selection_type == 'roulette':
             self.roulette_selection()
         elif selection_type == 'ranking':
@@ -114,6 +116,8 @@ class Population(specimen.Specimen):
             self.tournament_selection()
         else:
             raise ValueError('ERROR: incorrect type of selection, choose one from [roulette, ranking, tournament]')
+        self.specimens = self.specimens + self.elite
+        self.size = self.size + len(self.elite)
 
     def roulette_selection(self):
         qualities = []
@@ -135,15 +139,6 @@ class Population(specimen.Specimen):
                     population.append(self.specimens[i])
                     break
         self.specimens = population
-
-        # if elite:
-        #     for j in range(len(self.elite)):
-        #         qualities = []
-        #         for i in range(self.size):
-        #             qualities.append(self.specimens[i].quality())
-        #         min_value = min(qualities)
-        #         min_index = qualities.index(min_value)
-        #         self.specimens[min_index] = self.elite[j]
 
     def ranking_selection(self):
         qualities = []
@@ -169,15 +164,6 @@ class Population(specimen.Specimen):
             if i == len(q) - 1:
                 i = 0
         self.specimens = population
-
-        # if elite:
-        #     for j in range(len(self.elite)):
-        #         qualities = []
-        #         for i in range(self.size):
-        #             qualities.append(self.specimens[i].quality())
-        #         min_value = min(qualities)
-        #         min_index = qualities.index(min_value)
-        #         self.specimens[min_index] = self.elite[j]
 
     def tournament_selection(self):
         count_groups = self.size // 3
@@ -211,15 +197,6 @@ class Population(specimen.Specimen):
             if g == count_groups:
                 g = 0
         self.specimens = population
-
-        # if elite:
-        #     for j in range(len(self.elite)):
-        #         qualities = []
-        #         for i in range(self.size):
-        #             qualities.append(self.specimens[i].quality())
-        #         min_value = min(qualities)
-        #         min_index = qualities.index(min_value)
-        #         self.specimens[min_index] = self.elite[j]
 
     def best_specimen(self):
         qualities = []
