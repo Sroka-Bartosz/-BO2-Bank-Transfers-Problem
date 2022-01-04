@@ -1,5 +1,6 @@
-import random
 import copy
+import random
+
 import numpy as np
 
 
@@ -201,6 +202,12 @@ def ones(Z, case=1):
 
 
 def initialize_primitive_specimen(size_of_specimen, max_generated_value):
-    problem_matrix = np.random.randint(low=0, high=max_generated_value, size=(size_of_specimen, size_of_specimen))
+    problem_matrix = np.random.randint(low=0, high=max_generated_value, size=(size_of_specimen*2, size_of_specimen))
     np.fill_diagonal(problem_matrix, 0)
     return problem_matrix
+
+
+def generate_initial_matrix(max_generated_value, size_of_matrix, density_coefficient):
+    dense_matrix = np.random.randint(low=0, high=max_generated_value, size=(size_of_matrix, size_of_matrix))
+    np.fill_diagonal(dense_matrix, 0)
+    return dense_matrix - dense_matrix * (dense_matrix > (density_coefficient / 100 * max_generated_value))
