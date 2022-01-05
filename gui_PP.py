@@ -10,7 +10,10 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 import evolutionaryAlgorithm
 import functions
+import population
 import time
+import timeit
+from typing import List
 import numpy as np
 
 # global variables
@@ -31,7 +34,7 @@ window.iconbitmap('./cash_icon.ico')
 
 # create a notebook
 notebook = ttk.Notebook(window, width=690, height=530)
-notebook.pack(pady=5, side='left', expand=True)
+notebook.pack(fill='x', pady=5, side='left', expand=True)
 
 container1 = ttk.Frame(notebook, width=690, height=530)
 container2 = ttk.Frame(notebook, width=690, height=530)
@@ -39,15 +42,76 @@ container2 = ttk.Frame(notebook, width=690, height=530)
 # create frames
 frame3 = ttk.Frame(notebook, width=690, height=530)
 frame3.pack(fill='x', expand=True)
+frame4 = ttk.Frame(notebook, width=690, height=530)
+frame4.pack(fill='x', expand=True)
 
 # add frames to notebook
 notebook.add(container1, text='Macierz początkowa')
 notebook.add(container2, text='Wynik')
+notebook.add(frame4, text='Wynik 2')
 notebook.add(frame3, text='Przebieg algorytmu')
 
 # Create label frame
 lf = ttk.LabelFrame(window, text='Właściwości')
 lf.pack(padx=10, pady=20)
+
+
+def EvolutionaryAlgorithm(
+        primitive_specimen,
+        size_of_population: int = 20,
+        iterations: int = 50,
+        time_: int = 1000,
+        size_of_elite: int = 1,
+        number_of_mutations: int = 0,
+        size_of_mutation: List = [2, 2],
+        number_of_crossover: int = 0,
+        selection_type: str = "roulette"):
+    time_ea, i = 0, 1
+
+    # initialize of population
+    population_ = population.Population(size=size_of_population)
+    population_.make_population(primitive_specimen)
+
+    # choose first best specimen from initial population
+    best_specimen_ = population_.specimens[0]
+
+    # create elite
+    population_.create_elite(size_of_elite=size_of_elite)
+
+    # run i iterations of algorithm
+    while i <= iterations:
+        progress_var.set(i)
+        time.sleep(0.02)
+        window.update_idletasks()
+        # mutation
+        [population_.mutation(size_of_mutation[0], size_of_mutation[1]) for i in range(number_of_mutations)]
+
+        # crossover
+        [population_.crossover() for i in range(number_of_crossover)]
+
+        # selection
+        population_.selection(selection_type=selection_type)
+
+        # update elite if better specimen in population
+        population_.update_elite()
+
+        # print quality changes
+        # population_.display_elite_quality()
+        # population_.display_population_quality()
+        population_.display_quality_changes(i)
+
+        # get new best specimen
+        if population_.best_specimen().quality() > population_.best_quality:
+            best_specimen_ = population_.best_specimen()
+            population_.best_quality = best_specimen_.quality()
+
+        # time stop condition
+        time_ea += timeit.timeit()
+        if time_ea >= time_:
+            break
+        i += 1
+
+    return best_specimen_, population_.global_quality
 
 
 # Create a class to print matrix
@@ -97,6 +161,37 @@ class Table:
         scroll2.pack(fill='x', side=BOTTOM)
         canvas.pack(side=LEFT, expand=True, fill='both')
 
+
+def display_score(matrix):
+    canvas = tk.Canvas(frame4)
+    scrollable_frame = ttk.Frame(canvas)
+
+    scrollable_frame.bind(
+        "<Configure>",
+        lambda e: canvas.configure(
+            scrollregion=canvas.bbox("all")
+        )
+    )
+
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+
+    row_to = 0
+    for i in range(len(matrix)):
+        person = tk.Label(scrollable_frame, text=f"Osoba {i+1}", font=("Helvetica", 12))
+        person.grid(row=row_to, column=0)
+        for j in range(len(matrix[0])):
+            if matrix[i][j] != 0:
+                to_person = tk.Label(scrollable_frame, text=f" -> Osoba {j+1} : {matrix[i][j]} zł", font=("Helvetica", 12))
+                to_person.grid(row=row_to, column=1)
+                row_to += 1
+
+    scroll = Scrollbar(frame4, orient="vertical", command=canvas.yview)
+    scroll2 = Scrollbar(frame4, orient="horizontal", command=canvas.xview)
+    canvas.configure(yscrollcommand=scroll.set, xscrollcommand=scroll2.set)
+
+    scroll.pack(fill='y', side=RIGHT)
+    scroll2.pack(fill='x', side=BOTTOM)
+    canvas.pack(side=LEFT, expand=True, fill='both')
 
 # function to create new window
 def openNewWindow():
@@ -377,7 +472,7 @@ def plot_quality(plot_quality_, matrix_size):
     iteration_ = int(itera_entry.get())
     figure1 = plt.Figure(figsize=(6, 5))
     a = figure1.add_subplot(111)
-    size_ = max(matrix_size[0] * matrix_size[1])**2
+    size_ = max(matrix_size[0], matrix_size[1]) ** 2
     x_axis = [0]
     y_axis = [size_]
     for quali in plot_quality_:
@@ -401,7 +496,8 @@ def clear_frame():
         widgets.destroy()
     for widgets in container2.winfo_children():
         widgets.destroy()
-
+    for widgets in frame4.winfo_children():
+        widgets.destroy()
 
 def start_algorithm():
     clear_frame()
@@ -448,15 +544,15 @@ def start_algorithm():
     size_of_mutation_ = [mut_size_x, mut_size_y]
 
     start = time.time()
-    best_Specimen, quality_ = evolutionaryAlgorithm.EvolutionaryAlgorithm(primitive_specimen=matrix_,
-                                                                          size_of_population=size_population_,
-                                                                          iterations=iteration_,
-                                                                          # time=,
-                                                                          size_of_elite=size_of_elite,
-                                                                          number_of_mutations=number_mutation_,
-                                                                          size_of_mutation=size_of_mutation_,
-                                                                          number_of_crossover=number_crossover_,
-                                                                          selection_type=selection_)
+    best_Specimen, quality_ = EvolutionaryAlgorithm(primitive_specimen=matrix_,
+                                                    size_of_population=size_population_,
+                                                    iterations=iteration_,
+                                                    # time=,
+                                                    size_of_elite=size_of_elite,
+                                                    number_of_mutations=number_mutation_,
+                                                    size_of_mutation=size_of_mutation_,
+                                                    number_of_crossover=number_crossover_,
+                                                    selection_type=selection_)
 
     time_count = time.time() - start
 
@@ -466,19 +562,17 @@ def start_algorithm():
     best_Specimen.matrix = functions.delete_unexpected_rows_cols(best_Specimen.matrix)
     Table(container2, best_Specimen.matrix, best_Specimen_cols, best_Specimen_rows, len(best_Specimen.matrix),
           len(best_Specimen.matrix[0]), time_count)
+    display_score(best_Specimen.matrix)
 
     plot_quality(quality_, best_Specimen.matrix.shape)
     # print("Valid:   ", (best_Specimen_cols == cols_).all() and (best_Specimen_rows == rows_).all())
     print("The best Specimen:")
     best_Specimen.display()
 
-def step():
-    iteration_ = int(itera_entry.get())
-    pb1['value'] += 285/iteration_
-
 
 start_button = Button(lf, text="Start", command=start_algorithm)
 start_button.pack(padx=10, pady=10, expand=True)
-pb1 = Progressbar(window, orient=HORIZONTAL, length=285, mode='indeterminate')
+progress_var = DoubleVar()
+pb1 = Progressbar(window, orient=HORIZONTAL, variable=progress_var, length=285, mode='determinate')
 pb1.pack()
 window.mainloop()
