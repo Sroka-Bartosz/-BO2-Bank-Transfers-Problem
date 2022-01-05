@@ -7,6 +7,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import threading
 
 import functions
 import population
@@ -47,7 +48,7 @@ frame4.pack(fill='x', expand=True)
 # add frames to notebook
 notebook.add(container1, text='Macierz początkowa')
 notebook.add(container2, text='Wynik')
-notebook.add(frame4, text='Wynik 2')
+notebook.add(frame4, text='Przelewy')
 notebook.add(frame3, text='Przebieg algorytmu')
 
 # Create label frame
@@ -80,7 +81,6 @@ def EvolutionaryAlgorithm(
     # run i iterations of algorithm
     while i <= iterations:
         pb1['value'] += 100 / iterations
-        time.sleep(0.02)
         window.update_idletasks()
         # mutation
         [population_.mutation(size_of_mutation[0], size_of_mutation[1]) for i in range(number_of_mutations)]
@@ -180,9 +180,9 @@ def display_score(matrix):
         person.grid(row=row_to, column=0)
         for j in range(len(matrix[0])):
             if matrix[i][j] != 0:
-                to_person = tk.Label(scrollable_frame, text=f" -> Osoba {j + 1} : {matrix[i][j]} zł",
+                to_person = tk.Label(scrollable_frame, text=f" > Osoba {j + 1} : {matrix[i][j]} zł",
                                      font=("Helvetica", 12))
-                to_person.grid(row=row_to, column=1)
+                to_person.grid(row=row_to, column=1, sticky='w')
                 row_to += 1
 
     scroll = Scrollbar(frame4, orient="vertical", command=canvas.yview)
@@ -279,11 +279,11 @@ def openNewWindow():
                         e.grid(row=i, column=j, padx=2, pady=2)
                         entry.append(e)
 
-            b = Button(cre_matrix, text='Process', command=process)
+            b = Button(cre_matrix, text='Wygeneruj', command=process)
             b.grid(row=(matrix_size_x + 1), column=(matrix_size_y - 1) // 2 - 1, columnspan=3, sticky=E + W)
 
         start_button_1 = Button(first_button, text="Start", command=create_matrix)
-        exit_button_1 = Button(first_button, text="Exit", command=lambda: first_button.destroy())
+        exit_button_1 = Button(first_button, text="Wyjście", command=lambda: first_button.destroy())
         start_button_1.pack(padx=40, side=LEFT)
         exit_button_1.pack(padx=40, side=RIGHT)
 
@@ -316,8 +316,8 @@ def openNewWindow():
 
         lab_2 = Label(second_button, text="Wybierz plik z komputera")
         lab_2.pack(padx=10, pady=5)
-        Button(second_button, text="Open File", command=openFile).pack(fill='x', padx=20, pady=10)
-        Button(second_button, text="Exit", command=lambda: second_button.destroy()).pack(fill='x', padx=20, pady=20)
+        Button(second_button, text="Wybierz plik", command=openFile).pack(fill='x', padx=20, pady=10)
+        Button(second_button, text="Wyjście", command=lambda: second_button.destroy()).pack(fill='x', padx=20, pady=20)
 
     # third button to generate random matrix
     def NewWindowButton3():
@@ -445,26 +445,26 @@ lf1 = ttk.LabelFrame(lf, text='Metoda selekcji')
 lf1.pack(padx=10)
 
 selected_method = tk.IntVar()
-selections = ('roulette', 'ranking', 'tournament')
+selections = ('koła ruletki', 'rankingowa', 'turniejowa')
 
 
 def sel():
     global selection_
     chose_value = selected_method.get()
     if chose_value == 1:
-        selection_ = 'roulette'
+        selection_ = "roulette"
     elif chose_value == 2:
         selection_ = 'ranking'
     elif chose_value == 3:
         selection_ = 'tournament'
     else:
-        selection_ = 'roulette'
+        selection_ = "roulette"
 
 
 grid_column = 0
 for method in selections:
     radio = ttk.Radiobutton(lf1, text=method, value=grid_column + 1, variable=selected_method, command=sel)
-    radio.grid(column=grid_column, row=0, ipadx=10, ipady=10)
+    radio.grid(column=grid_column, row=0, ipadx=3, ipady=3)
 
     grid_column += 1
 
@@ -506,7 +506,10 @@ def start_algorithm():
     global matrix_
     size_of_elite = 0
     size_population_ = int(E1.get())
-    matrix_ = functions.reshape_initial_problem(matrix_)
+
+    if matrix_ is None:
+        messagebox.showinfo("Warning", "Macierz początkowa nie jest zdefiniowana!")
+        return
 
     if size_population_ > 50 or size_population_ < 1:
         messagebox.showinfo("Warning", "Zły rozmiar populacji. Max:50, Min:1")
@@ -532,15 +535,20 @@ def start_algorithm():
         messagebox.showinfo("Warning", "Zła liczba iteracji. Max: 10000, Min:1")
         return
 
-    mut_size_x = int(E3.get())
-    mut_size_y = int(E3_1.get())
+    mut_size_y = int(E3.get())
+    mut_size_x = int(E3_1.get())
 
-    if mut_size_y > len(matrix_[0]) // 2 or mut_size_y < 2:
-        messagebox.showinfo("Warning", "Zły rozmiar mutacji. Max: liczba wierszy/2, Min:2")
+    if mut_size_x > len(matrix_) // 2 or mut_size_x < 2:
+        messagebox.showinfo("Warning", f"Zły rozmiar mutacji. Max: {len(matrix_) // 2}, Min:2")
         return
 
-    if mut_size_x > len(matrix_[0]) // 2 or mut_size_x < 2:
-        messagebox.showinfo("Warning", "Zły rozmiar mutacji. Max: liczba kolumn/2, Min:2")
+    if mut_size_y > len(matrix_[0]) // 2 or mut_size_y < 2:
+        messagebox.showinfo("Warning", f"Zły rozmiar mutacji. Max: {len(matrix_[0]) // 2}, Min:2")
+        return
+
+    if mut_size_x > min(mut_size_x, mut_size_y) or mut_size_y > min(mut_size_x, mut_size_y):
+        messagebox.showinfo("Warning",
+                            f"Zły rozmiar mutacji. Max: {min(mut_size_x, mut_size_y)}x{min(mut_size_x, mut_size_y)}")
         return
 
     size_of_mutation_ = [mut_size_x, mut_size_y]
