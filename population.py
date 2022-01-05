@@ -24,8 +24,8 @@ def elementary_crossover(parent1_, parent2_):
 
 
 def elementary_mutation(mutate_specimen, rows_number, cols_number):
-    rows = random.sample([i for i in range(mutate_specimen.size)], k=rows_number)
-    cols = random.sample([i for i in range(mutate_specimen.size) if i not in rows], k=cols_number)
+    rows = random.sample([i for i in range(mutate_specimen.number_of_rows)], k=rows_number)
+    cols = random.sample([i for i in range(mutate_specimen.number_of_cols) if i not in rows], k=cols_number)
 
     mutate_specimen = mutate_specimen.matrix
 
