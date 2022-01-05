@@ -15,11 +15,10 @@ class Specimen:
 
     def initialize_matrix_change(self):
         first_loop = True
-        # self.matrix - (np.ones_like(self.matrix) - np.eye(self.number_of_rows, self.number_of_cols)).astype('uint8')
+        self.matrix = self.matrix - (np.ones_like(self.matrix) - np.eye(self.number_of_rows, self.number_of_cols)).astype('uint8')
+        self.update_rows_and_cols(self.matrix)
         while np.sum(self.matrix.diagonal()) != 0 or first_loop:
             visit = [(row, col) for row in range(self.number_of_rows) for col in range(self.number_of_cols)]
-            # rows = [row - (self.number_of_rows - 1) for row in self.rows]
-            # cols = [col - (self.number_of_cols - 1) for col in self.cols]
             rows = self.rows.copy()
             cols = self.cols.copy()
             matrix = np.zeros_like(self.matrix)
@@ -30,10 +29,12 @@ class Specimen:
                 rows[row] -= val
                 cols[col] -= val
                 visit.remove((row, col))
-            # self.matrix = matrix + (
-            #             np.ones_like(self.matrix) - np.eye(self.number_of_rows, self.number_of_cols)).astype('uint8')
-            self.matrix = functions.reshape_initial_problem(matrix)
+            self.matrix = matrix + (np.ones_like(self.matrix) - np.eye(self.number_of_rows, self.number_of_cols)).astype('uint8')
             first_loop = False
+
+    def update_rows_and_cols(self, matrix):
+        self.rows = np.sum(matrix, axis=1)
+        self.cols = np.sum(matrix, axis=0)
 
     def initialize_matrix_change2(self):
         first_loop = True
