@@ -7,6 +7,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import threading
 
 import functions
 import population
@@ -80,7 +81,6 @@ def EvolutionaryAlgorithm(
     # run i iterations of algorithm
     while i <= iterations:
         pb1['value'] += 100 / iterations
-        time.sleep(0.02)
         window.update_idletasks()
         # mutation
         [population_.mutation(size_of_mutation[0], size_of_mutation[1]) for i in range(number_of_mutations)]
@@ -506,7 +506,10 @@ def start_algorithm():
     global matrix_
     size_of_elite = 0
     size_population_ = int(E1.get())
-    matrix_ = functions.reshape_initial_problem(matrix_)
+
+    if matrix_ is None:
+        messagebox.showinfo("Warning", "Macierz początkowa nie jest zdefiniowana!")
+        return
 
     if size_population_ > 50 or size_population_ < 1:
         messagebox.showinfo("Warning", "Zły rozmiar populacji. Max:50, Min:1")
@@ -532,15 +535,20 @@ def start_algorithm():
         messagebox.showinfo("Warning", "Zła liczba iteracji. Max: 10000, Min:1")
         return
 
-    mut_size_x = int(E3.get())
-    mut_size_y = int(E3_1.get())
+    mut_size_y = int(E3.get())
+    mut_size_x = int(E3_1.get())
 
-    if mut_size_y > len(matrix_[0]) // 2 or mut_size_y < 2:
-        messagebox.showinfo("Warning", "Zły rozmiar mutacji. Max: liczba wierszy/2, Min:2")
+    if mut_size_x > len(matrix_) // 2 or mut_size_x < 2:
+        messagebox.showinfo("Warning", f"Zły rozmiar mutacji. Max: {len(matrix_) // 2}, Min:2")
         return
 
-    if mut_size_x > len(matrix_[0]) // 2 or mut_size_x < 2:
-        messagebox.showinfo("Warning", "Zły rozmiar mutacji. Max: liczba kolumn/2, Min:2")
+    if mut_size_y > len(matrix_[0]) // 2 or mut_size_y < 2:
+        messagebox.showinfo("Warning", f"Zły rozmiar mutacji. Max: {len(matrix_[0]) // 2}, Min:2")
+        return
+
+    if mut_size_x > min(mut_size_x, mut_size_y) or mut_size_y > min(mut_size_x, mut_size_y):
+        messagebox.showinfo("Warning",
+                            f"Zły rozmiar mutacji. Max: {min(mut_size_x, mut_size_y)}x{min(mut_size_x, mut_size_y)}")
         return
 
     size_of_mutation_ = [mut_size_x, mut_size_y]
