@@ -48,7 +48,7 @@ frame4.pack(fill='x', expand=True)
 # add frames to notebook
 notebook.add(container1, text='Macierz początkowa')
 notebook.add(container2, text='Wynik')
-notebook.add(frame4, text='Wynik 2')
+notebook.add(frame4, text='Przelewy')
 notebook.add(frame3, text='Przebieg algorytmu')
 
 # Create label frame
@@ -180,9 +180,9 @@ def display_score(matrix):
         person.grid(row=row_to, column=0)
         for j in range(len(matrix[0])):
             if matrix[i][j] != 0:
-                to_person = tk.Label(scrollable_frame, text=f" -> Osoba {j + 1} : {matrix[i][j]} zł",
+                to_person = tk.Label(scrollable_frame, text=f" > Osoba {j + 1} : {matrix[i][j]} zł",
                                      font=("Helvetica", 12))
-                to_person.grid(row=row_to, column=1)
+                to_person.grid(row=row_to, column=1, sticky='w')
                 row_to += 1
 
     scroll = Scrollbar(frame4, orient="vertical", command=canvas.yview)
@@ -279,11 +279,11 @@ def openNewWindow():
                         e.grid(row=i, column=j, padx=2, pady=2)
                         entry.append(e)
 
-            b = Button(cre_matrix, text='Process', command=process)
+            b = Button(cre_matrix, text='Wygeneruj', command=process)
             b.grid(row=(matrix_size_x + 1), column=(matrix_size_y - 1) // 2 - 1, columnspan=3, sticky=E + W)
 
         start_button_1 = Button(first_button, text="Start", command=create_matrix)
-        exit_button_1 = Button(first_button, text="Exit", command=lambda: first_button.destroy())
+        exit_button_1 = Button(first_button, text="Wyjście", command=lambda: first_button.destroy())
         start_button_1.pack(padx=40, side=LEFT)
         exit_button_1.pack(padx=40, side=RIGHT)
 
@@ -316,8 +316,8 @@ def openNewWindow():
 
         lab_2 = Label(second_button, text="Wybierz plik z komputera")
         lab_2.pack(padx=10, pady=5)
-        Button(second_button, text="Open File", command=openFile).pack(fill='x', padx=20, pady=10)
-        Button(second_button, text="Exit", command=lambda: second_button.destroy()).pack(fill='x', padx=20, pady=20)
+        Button(second_button, text="Wybierz plik", command=openFile).pack(fill='x', padx=20, pady=10)
+        Button(second_button, text="Wyjście", command=lambda: second_button.destroy()).pack(fill='x', padx=20, pady=20)
 
     # third button to generate random matrix
     def NewWindowButton3():
@@ -445,26 +445,26 @@ lf1 = ttk.LabelFrame(lf, text='Metoda selekcji')
 lf1.pack(padx=10)
 
 selected_method = tk.IntVar()
-selections = ('roulette', 'ranking', 'tournament')
+selections = ('koła ruletki', 'rankingowa', 'turniejowa')
 
 
 def sel():
     global selection_
     chose_value = selected_method.get()
     if chose_value == 1:
-        selection_ = 'roulette'
+        selection_ = "roulette"
     elif chose_value == 2:
         selection_ = 'ranking'
     elif chose_value == 3:
         selection_ = 'tournament'
     else:
-        selection_ = 'roulette'
+        selection_ = "roulette"
 
 
 grid_column = 0
 for method in selections:
     radio = ttk.Radiobutton(lf1, text=method, value=grid_column + 1, variable=selected_method, command=sel)
-    radio.grid(column=grid_column, row=0, ipadx=10, ipady=10)
+    radio.grid(column=grid_column, row=0, ipadx=3, ipady=3)
 
     grid_column += 1
 
