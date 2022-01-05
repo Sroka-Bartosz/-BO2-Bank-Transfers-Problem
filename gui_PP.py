@@ -8,7 +8,6 @@ from tkinter import filedialog, messagebox, ttk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-import evolutionaryAlgorithm
 import functions
 import population
 import time
@@ -67,7 +66,7 @@ def EvolutionaryAlgorithm(
         number_of_crossover: int = 0,
         selection_type: str = "roulette"):
     time_ea, i = 0, 1
-
+    pb1['value'] = 0
     # initialize of population
     population_ = population.Population(size=size_of_population)
     population_.make_population(primitive_specimen)
@@ -80,7 +79,7 @@ def EvolutionaryAlgorithm(
 
     # run i iterations of algorithm
     while i <= iterations:
-        progress_var.set(i)
+        pb1['value'] += 100 / iterations
         time.sleep(0.02)
         window.update_idletasks()
         # mutation
@@ -177,11 +176,12 @@ def display_score(matrix):
 
     row_to = 0
     for i in range(len(matrix)):
-        person = tk.Label(scrollable_frame, text=f"Osoba {i+1}", font=("Helvetica", 12))
+        person = tk.Label(scrollable_frame, text=f"Osoba {i + 1}", font=("Helvetica", 12))
         person.grid(row=row_to, column=0)
         for j in range(len(matrix[0])):
             if matrix[i][j] != 0:
-                to_person = tk.Label(scrollable_frame, text=f" -> Osoba {j+1} : {matrix[i][j]} zł", font=("Helvetica", 12))
+                to_person = tk.Label(scrollable_frame, text=f" -> Osoba {j + 1} : {matrix[i][j]} zł",
+                                     font=("Helvetica", 12))
                 to_person.grid(row=row_to, column=1)
                 row_to += 1
 
@@ -192,6 +192,7 @@ def display_score(matrix):
     scroll.pack(fill='y', side=RIGHT)
     scroll2.pack(fill='x', side=BOTTOM)
     canvas.pack(side=LEFT, expand=True, fill='both')
+
 
 # function to create new window
 def openNewWindow():
@@ -499,6 +500,7 @@ def clear_frame():
     for widgets in frame4.winfo_children():
         widgets.destroy()
 
+
 def start_algorithm():
     clear_frame()
     global matrix_
@@ -565,14 +567,12 @@ def start_algorithm():
     display_score(best_Specimen.matrix)
 
     plot_quality(quality_, best_Specimen.matrix.shape)
-    # print("Valid:   ", (best_Specimen_cols == cols_).all() and (best_Specimen_rows == rows_).all())
     print("The best Specimen:")
     best_Specimen.display()
 
 
 start_button = Button(lf, text="Start", command=start_algorithm)
 start_button.pack(padx=10, pady=10, expand=True)
-progress_var = DoubleVar()
-pb1 = Progressbar(window, orient=HORIZONTAL, variable=progress_var, length=285, mode='determinate')
+pb1 = Progressbar(window, orient=HORIZONTAL, length=285, mode='determinate')
 pb1.pack()
 window.mainloop()
