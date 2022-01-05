@@ -7,35 +7,21 @@ import functions
 
 class Specimen:
     def __init__(self, matrix: np.ndarray):
-        self.size = matrix.shape[0]
+        self.number_of_rows = matrix.shape[0]
+        self.number_of_cols = matrix.shape[1]
         self.rows = np.sum(matrix, axis=1)
         self.cols = np.sum(matrix, axis=0)
         self.matrix = matrix
 
-    def initialize_matrix_permutation(self):
-        cols, rows = self.cols, self.rows
-        matrix = np.zeros_like(self.matrix)
-        while list(np.sum(matrix, axis=0)) != list(cols):
-            temp_columns = cols
-            for row in range(self.size - 1):
-                permutation = list(functions.sums(self.size, rows[row]))
-                rows_ = functions.filter(permutation, temp_columns, row)
-                if len(rows_) == 0:
-                    continue
-                idx_random_row = np.random.randint(len(rows_))
-                matrix[row] = rows_[idx_random_row]
-                temp_columns = [temp_columns[i] - matrix[row][i] for i in range(self.size)]
-            if temp_columns[-1] != 0:
-                continue
-            matrix[-1] = temp_columns
-        self.matrix = matrix
-
     def initialize_matrix_change(self):
         first_loop = True
-        self.matrix - (np.ones_like(self.matrix) - np.eye(self.matrix.shape[0])).astype('uint8')
+        # self.matrix - (np.ones_like(self.matrix) - np.eye(self.number_of_rows, self.number_of_cols)).astype('uint8')
         while np.sum(self.matrix.diagonal()) != 0 or first_loop:
-            visit = [(row, col) for row in range(self.size) for col in range(self.size)]
-            rows, cols = [row - (self.size - 1) for row in self.rows], [col - (self.size - 1) for col in self.cols]
+            visit = [(row, col) for row in range(self.number_of_rows) for col in range(self.number_of_cols)]
+            # rows = [row - (self.number_of_rows - 1) for row in self.rows]
+            # cols = [col - (self.number_of_cols - 1) for col in self.cols]
+            rows = self.rows.copy()
+            cols = self.cols.copy()
             matrix = np.zeros_like(self.matrix)
             while visit:
                 row, col = random.choice(visit)
@@ -44,7 +30,9 @@ class Specimen:
                 rows[row] -= val
                 cols[col] -= val
                 visit.remove((row, col))
-            self.matrix = matrix + (np.ones_like(self.matrix) - np.eye(self.matrix.shape[0])).astype('uint8')
+            # self.matrix = matrix + (
+            #             np.ones_like(self.matrix) - np.eye(self.number_of_rows, self.number_of_cols)).astype('uint8')
+            self.matrix = functions.reshape_initial_problem(matrix)
             first_loop = False
 
     def initialize_matrix_change2(self):
@@ -53,8 +41,8 @@ class Specimen:
         np.fill_diagonal(matrix_, 1)
 
         while np.sum(matrix_.diagonal()) != 0 or first_loop:
-            visit1 = [(row, col) for row in range(self.size) for col in range(self.size)]
-            visit2 = [(row, col) for row in range(self.size) for col in range(self.size)]
+            visit1 = [(row, col) for row in range(self.number_of_rows) for col in range(self.number_of_cols)]
+            visit2 = [(row, col) for row in range(self.number_of_rows) for col in range(self.number_of_cols)]
             rows, cols = self.rows.copy(), self.cols.copy()
             rows1 = []
             rows2 = []
@@ -80,35 +68,23 @@ class Specimen:
                 cols1[col1] = cols1[col1] - val1
                 visit1.remove((row1, col1))
 
-                row2, col2 = random.choice(visit2)
-                val2 = min(rows2[row2], cols2[col2])
-                matrix2[row2][col2] = val2
-                rows2[row2] = rows2[row2] - val2
-                cols2[col2] = cols2[col2] - val2
-                visit2.remove((row2, col2))
-
-            matrix_ = matrix1 + matrix2
-            arr1, arr2 = np.nonzero(rows1)[0], np.nonzero(rows2)[0]
-            arr3, arr4 = np.nonzero(cols1)[0], np.nonzero(cols2)[0]
-
-            if len(arr1) == 0 and len(arr2) == 0 and len(arr3 == 0) and len(arr4[0]) == 0:
+    def initialize_matrix_permutation(self):
+        cols, rows = self.cols, self.rows
+        matrix = np.zeros_like(self.matrix)
+        while list(np.sum(matrix, axis=0)) != list(cols):
+            temp_columns = cols
+            for row in range(self.number_of_rows - 1):
+                permutation = list(functions.sums(self.number_of_cols, rows[row]))
+                rows_ = functions.filter(permutation, temp_columns, row)
+                if len(rows_) == 0:
+                    continue
+                idx_random_row = np.random.randint(len(rows_))
+                matrix[row] = rows_[idx_random_row]
+                temp_columns = [temp_columns[i] - matrix[row][i] for i in range(self.number_of_cols)]
+            if temp_columns[-1] != 0:
                 continue
-            else:
-                if len(arr1) == 1 and len(arr3) == 1:
-                    a1, b1 = int(arr1), int(arr3)
-                    matrix_[a1][b1] = matrix_[a1][b1] + rows1[a1]
-                if len(arr2) == 1 and len(arr3) == 1:
-                    a1, b1 = int(arr2), int(arr3)
-                    matrix_[a1][b1] = matrix_[a1][b1] + rows2[a1]
-                if len(arr1) == 1 and len(arr4) == 1:
-                    a1, b1 = int(arr1), int(arr4)
-                    matrix_[a1][b1] = matrix_[a1][b1] + rows1[a1]
-                if len(arr2) == 1 and len(arr4) == 1:
-                    a1, b1 = int(arr2), int(arr4)
-                    matrix_[a1][b1] = matrix_[a1][b1] + rows2[a1]
-
-            first_loop = False
-        self.matrix = matrix_
+            matrix[-1] = temp_columns
+        self.matrix = matrix
 
     def quality(self):
         return np.count_nonzero(self.matrix == 0)
