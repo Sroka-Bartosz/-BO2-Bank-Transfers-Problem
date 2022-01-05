@@ -32,6 +32,7 @@ class Specimen:
             self.matrix = matrix + (np.ones_like(self.matrix) - np.eye(self.number_of_rows, self.number_of_cols)).astype('uint8')
             first_loop = False
         self.update_rows_and_cols(self.matrix)
+        self.matrix = functions.reshape_initial_problem(self.matrix)
 
     def update_rows_and_cols(self, matrix):
         self.rows = np.sum(matrix, axis=1)

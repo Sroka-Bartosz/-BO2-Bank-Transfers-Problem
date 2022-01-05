@@ -72,7 +72,7 @@ class Population(specimen.Specimen):
     def make_population(self, matrix):
         for i in range(self.size):
             if i == 0:
-                S = specimen.Specimen(matrix)
+                S = specimen.Specimen(functions.reshape_initial_problem(matrix))
             else:
                 S = specimen.Specimen(matrix)
                 S.initialize_matrix_change()
