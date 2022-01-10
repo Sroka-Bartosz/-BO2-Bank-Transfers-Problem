@@ -1,20 +1,20 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from tkinter import *
-from tkinter.ttk import *
+import time
+import timeit
 import tkinter as tk
+from tkinter import *
 from tkinter import filedialog, messagebox, ttk
+from tkinter.ttk import *
+from typing import List
+
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import threading
 
 import functions
 import population
-import time
-import timeit
-from typing import List
-import numpy as np
 
 # global variables
 matrix_ = None
@@ -546,9 +546,9 @@ def start_algorithm():
         messagebox.showinfo("Warning", f"Zły rozmiar mutacji. Max: {len(matrix_[0]) // 2}, Min:2")
         return
 
-    if mut_size_x > min(mut_size_x, mut_size_y) or mut_size_y > min(mut_size_x, mut_size_y):
+    if mut_size_x > min(mut_size_x, mut_size_y) // 2 or mut_size_y > min(mut_size_x, mut_size_y) // 2:
         messagebox.showinfo("Warning",
-                            f"Zły rozmiar mutacji. Max: {min(mut_size_x, mut_size_y)}x{min(mut_size_x, mut_size_y)}")
+                            f"Zły rozmiar mutacji. Max: {min(mut_size_x, mut_size_y) // 2}x{min(mut_size_x, mut_size_y) // 2}")
         return
 
     size_of_mutation_ = [mut_size_x, mut_size_y]
