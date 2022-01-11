@@ -546,9 +546,9 @@ def start_algorithm():
         messagebox.showinfo("Warning", f"Zły rozmiar mutacji. Max: {len(matrix_[0]) // 2}, Min:2")
         return
 
-    if mut_size_x > min(mut_size_x, mut_size_y) // 2 or mut_size_y > min(mut_size_x, mut_size_y) // 2:
+    if mut_size_x > min(len(matrix_), len(matrix_[0])) // 2 or mut_size_y > min(len(matrix_), len(matrix_[0])) // 2:
         messagebox.showinfo("Warning",
-                            f"Zły rozmiar mutacji. Max: {min(mut_size_x, mut_size_y) // 2}x{min(mut_size_x, mut_size_y) // 2}")
+                            f"Zły rozmiar mutacji. Max: {min(len(matrix_), len(matrix_[0])) // 2}x{min(len(matrix_), len(matrix_[0])) // 2}")
         return
 
     size_of_mutation_ = [mut_size_x, mut_size_y]
