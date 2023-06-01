@@ -1,5 +1,7 @@
 # Bank Transfers Problem
 
+The project involves attempting to optimize the number of transfers between a group of individuals using an evolutionary algorithm. The project was carried out in the Operations Research laboratory with a simple GUI for handling the problem.
+
 ## Description of the project files:
 #### specimen.py 
 ###### - representing a instance of Specimen Class the elementary part of population
